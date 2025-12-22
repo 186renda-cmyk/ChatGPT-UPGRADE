@@ -1,0 +1,30 @@
+{
+  "redirects": [
+    {
+      "source": "/go/gpt-shared",
+      "destination": "https://www.naifeistation.com/index/buy?id=238&invite=3903",
+      "permanent": false
+    },
+    {
+      "source": "/go/gpt-exclusive",
+      "destination": "https://www.naifeistation.com/index/buy?id=238&invite=3903",
+      "permanent": false
+    },
+    {
+      "source": "/go/gpt-topup",
+      "destination": "https://www.naifeistation.com/index/buy?id=241&invite=3903",
+      "permanent": false
+    }
+    ,
+    {
+      "source": "/go/pokepay",
+      "destination": "https://app.pokepay.cc/pages/invitation/regist?r=365888",
+      "permanent": false
+    },
+    {
+      "source": "/go/okx",
+      "destination": "https://www.hfivpyichgod.com/zh-hans/join?channelId=ACE529411",
+      "permanent": false
+    }
+  ]
+}

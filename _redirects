@@ -1,0 +1,10 @@
+/# 主页
+/ / 200
+
+# 购买/升级入口指向定价区
+/go/gpt-topup /#pricing 301
+/go/gpt-exclusive /#pricing 301
+/go/gpt-shared /#pricing 301
+
+# 博客页面占位：跳转到站内博客区
+/blog/* /#blog 302

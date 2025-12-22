@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DALL·E 3 vs Midjourney v6：设计师该选谁？ | GPT-Upgrade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { background: '#020410' }, typography: (theme) => ({ DEFAULT: { css: { color: theme('colors.gray.400'), h1: { color: '#fff' }, strong: { color: '#f472b6' } } } }) } } }
+    </script>
+    <style>body { background-color: #020410; } .glass-nav { background: rgba(2,4,16,0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.05); } .sticky-sidebar { position: sticky; top: 100px; }</style>
+</head>
+<body class="antialiased text-gray-300 selection:bg-pink-500/30">
+    <nav class="fixed top-0 w-full z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="../index.html" class="text-sm font-bold text-white hover:text-pink-400 transition">← GPT-Upgrade 情报局</a>
+            <a href="../index.html#pricing" class="text-xs font-bold bg-white text-black px-4 py-2 rounded-full">获取绘画权限</a>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8">
+                <div class="mb-8">
+                    <span class="px-2 py-1 rounded bg-pink-500/10 border border-pink-500/20 text-xs font-mono text-pink-400">DESIGN</span>
+                    <h1 class="text-3xl md:text-5xl font-bold text-white mt-4 mb-6 leading-tight">DALL·E 3 vs Midjourney v6：<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-500">设计师该选谁？</span></h1>
+                    <div class="flex gap-4 text-sm text-gray-500"><span>2025.07.25</span><span>•</span><span>5 min read</span></div>
+                </div>
+
+                <article class="prose prose-invert prose-lg max-w-none">
+                    <p>AI 绘画领域，Midjourney 一直以“画质精美”著称，而 DALL·E 3 则以“听得懂人话”后来居上。作为设计师，我们该如何选择？</p>
+                    <h2>1. 语义理解：DALL·E 3 完胜</h2>
+                    <p>在 Midjourney 里，你需要像写代码一样写 Prompt（<code>--v 6.0</code>，<code>--ar 16:9</code>，各种权重参数）。</p>
+                    <p>而在 <strong>ChatGPT Plus 内置的 DALL·E 3</strong> 中，你只需要像和人说话一样描述画面。比如：“画一只赛博朋克风格的猫，手里拿着咖啡，背景是雨夜的东京”。DALL·E 3 能精准捕捉画面中的每一个元素，不会漏掉“咖啡”或“雨夜”。</p>
+                    <h2>2. 文字生成能力</h2>
+                    <p>这是 DALL·E 3 的杀手锏。如果你需要生成海报、Logo，Midjourney 往往会把文字画成乱码。DALL·E 3 则能准确地在图片中拼写出你指定的单词（如 "Coffee Shop"）。</p>
+                    <h2>3. 工作流整合</h2>
+                    <p>ChatGPT Plus 的最大优势是<strong>多模态整合</strong>。你可以先用 GPT-4o 帮你构思创意、写文案，然后直接让它生成配图，最后再让它提出修改意见。这是一站式的工作流。</p>
+                    <h2>总结</h2>
+                    <ul>
+                        <li><strong>选 Midjourney：</strong>如果你追求极致的光影艺术感，不介意复杂的参数调试。</li>
+                        <li><strong>选 DALL·E 3 (ChatGPT Plus)：</strong>如果你需要<strong>高效产出</strong>、准确还原需求、或者需要生成带文字的素材。</li>
+                    </ul>
+                    <p>最重要的是，DALL·E 3 包含在 Plus 订阅中，无需额外付费。</p>
+                </article>
+            </div>
+
+            <div class="col-span-1 lg:col-span-4 relative">
+                <div class="sticky-sidebar space-y-6">
+                    <div class="p-6 rounded-2xl bg-[#09090b] border border-pink-500/30 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-pink-500/20 blur-[50px] rounded-full"></div>
+                        <div class="relative z-10">
+                            <div class="text-xs font-bold text-pink-400 mb-2 uppercase">🎨 每天 50 张高清绘图</div>
+                            <h3 class="text-xl font-bold text-white mb-4">开通 DALL·E 3</h3>
+                            <div class="flex items-end gap-2 mb-6"><span class="text-3xl font-bold text-white">¥213.9</span><span class="text-xs text-gray-500 line-through mb-1">¥230</span></div>
+                            <a href="../index.html#pricing" class="block w-full py-3 rounded-xl bg-pink-500 text-white font-bold text-center hover:bg-pink-400 transition">获取绘画权限</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="py-12 border-t border-white/5 text-center text-sm text-gray-600"><p>© 2025 GPT-Upgrade. All rights reserved.</p></footer>
+</body>
+</html>

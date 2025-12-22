@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gpt-upgrade.top/sitemap.xml
