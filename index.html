@@ -716,7 +716,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Article 1 -->
                 <article class="group reveal relative rounded-[2rem] p-8 bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-purple-500/30 transition-all duration-300 flex flex-col h-full">
-                    <a href="/blog/chatgpt-go-vs-plus.html" class="absolute inset-0 z-10" aria-label="ChatGPT Go vs Plus"></a>
+                    <a href="blog/chatgpt-go-vs-plus.html" class="absolute inset-0 z-20" aria-label="ChatGPT Go vs Plus"></a>
                     <div class="flex items-center justify-between mb-6">
                         <div class="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs font-bold text-purple-300">选购指南</div>
                         <span class="text-xs text-gray-500">2026.01.05</span>
@@ -851,22 +851,6 @@
             }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
             reveals.forEach(el => observer.observe(el));
         });
-    </script>
-    <script>
-        document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
-        document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
-        document.addEventListener('gestureend', function(e) { e.preventDefault(); });
-
-        document.addEventListener('touchstart', function(event) {
-            if (event.touches.length > 1) { event.preventDefault(); }
-        }, { passive: false });
-
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) { event.preventDefault(); }
-            lastTouchEnd = now;
-        }, false);
     </script>
 </body>
 </html>
