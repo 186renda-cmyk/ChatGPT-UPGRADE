@@ -32,11 +32,18 @@
             theme: {
                 extend: {
                     colors: { background: '#020410' },
-                    animation: { blob: 'blob 7s infinite', float: 'float 6s ease-in-out infinite', 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'voice-wave': 'voice 1.5s ease-in-out infinite' },
+                    animation: { 
+                        blob: 'blob 7s infinite', 
+                        float: 'float 6s ease-in-out infinite', 
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', 
+                        'voice-wave': 'voice 1.5s ease-in-out infinite',
+                        shimmer: 'shimmer 2s linear infinite'
+                    },
                     keyframes: {
                         blob: { '0%': { transform: 'translate(0px, 0px) scale(1)' }, '33%': { transform: 'translate(30px, -50px) scale(1.1)' }, '66%': { transform: 'translate(-20px, 20px) scale(0.9)' }, '100%': { transform: 'translate(0px, 0px) scale(1)' } },
                         float: { '0%, 100%': { transform: 'translateY(0) rotate(-1deg)' }, '50%': { transform: 'translateY(-20px) rotate(1deg)' } },
-                        voice: { '0%, 100%': { transform: 'scale(1)', opacity: '1' }, '50%': { transform: 'scale(1.5)', opacity: '0.5' } }
+                        voice: { '0%, 100%': { transform: 'scale(1)', opacity: '1' }, '50%': { transform: 'scale(1.5)', opacity: '0.5' } },
+                        shimmer: { from: { backgroundPosition: '0 0' }, to: { backgroundPosition: '-200% 0' } }
                     }
                 }
             }
@@ -86,7 +93,7 @@
         .glass-nav { background: rgba(2, 4, 16, 0.6); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .hero-gradient-text { background: linear-gradient(to right, #4facfe 0%, #00f2fe 50%, #f093fb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); will-change: opacity, transform; }
         .reveal.active { opacity: 1; transform: translateY(0); }
     </style>
 </head>
@@ -228,101 +235,225 @@
         </div>
     </section>
 
-    <section id="pricing" class="py-24 relative z-20">
-        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 mix-blend-overlay"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+    <section id="pricing" class="py-24 relative z-20 bg-[#020410] overflow-hidden">
+        <!-- Background Glows -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[800px] bg-indigo-900/10 blur-[150px] rounded-full pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-5xl font-bold mb-6">选择您的 <span class="hero-gradient-text">算力引擎</span></h2>
-                <p class="text-gray-400 max-w-xl mx-auto text-lg">从入门尝鲜到企业级独享，满足不同阶段的生产力需求。</p>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <!-- Header & Coupon -->
+            <div class="flex flex-col items-center mb-20">
+                <!-- Floating Coupon Pill -->
+                <div class="mb-8 animate-bounce-slow">
+                    <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-gradient-to-r from-purple-900/80 to-indigo-900/80 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.4)] backdrop-blur-md cursor-pointer group copy-code" data-code="xmpick">
+                        <span class="text-xl">🎁</span>
+                        <span class="text-sm text-purple-100 font-medium">限时福利：码 <span class="bg-white/10 px-2 py-0.5 rounded text-white font-mono font-bold group-hover:bg-white/20 transition-colors">xmpick</span> (点击复制) 立享 93 折</span>
+                    </div>
+                </div>
+
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white tracking-tight text-center">
+                    选择您的 <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">AI 进化方案</span>
+                </h2>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-center max-w-6xl mx-auto">
-                <div class="group reveal relative flex flex-col p-6 rounded-[2rem] bg-gradient-to-b from-[#1a1033] to-[#050508] border border-white/5 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(168,85,247,0.2)]">
-                    <div class="absolute -top-3 -right-3 px-4 py-1.5 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl shadow-lg shadow-rose-500/30 transform rotate-3 z-20"><span class="text-[10px] font-bold text-white tracking-wider">🔥 70% 小白首选</span></div>
-                    <div class="absolute inset-0 rounded-3xl bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative z-10">
-                        <div class="text-sm font-medium text-purple-400 mb-2">共享体验版</div>
-                        <div class="flex items-end gap-3">
-                            <span class="text-3xl font-bold text-white">¥52<span class="text-lg">.0</span></span>
-                            <span class="text-sm text-gray-500 line-through decoration-gray-600">¥55.88</span>
-                            <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/20">省 ¥4</span>
-                        </div>
-                        <div class="mt-4 p-2 rounded-lg bg-purple-500/10 border border-dashed border-purple-500/30 flex items-center justify-between cursor-pointer copy-code group/code hover:bg-purple-500/20 transition-colors" data-code="xmpick">
-                            <span class="text-[10px] text-purple-300 ml-1">券后价 (码: xmpick)</span>
-                            <span class="w-6 h-6 rounded bg-purple-500/20 flex items-center justify-center text-purple-400"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></span>
-                        </div>
-                        <div class="space-y-3 mb-6 flex-grow">
-                            <li class="flex items-start gap-3 text-sm text-gray-300"><svg class="w-5 h-5 text-purple-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"/></svg><span>4人高素质订阅池 (不拥挤)</span></li>
-                            <li class="flex items-start gap-3 text-sm text-gray-300"><svg class="w-5 h-5 text-purple-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>极速自动发货 (秒连)</span></li>
-                            <li class="flex items-start gap-3 text-sm text-gray-300"><svg class="w-5 h-5 text-purple-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>翻车包赔 / 全程质保</span></li>
-                        </div>
-                        <div class="pt-5 border-t border-white/5">
-                            <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Perfect For</div>
-                            <div class="flex items-center gap-2 text-xs text-gray-300">
-                                <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                                学生党 / 偶尔使用者 / AI初学者
+            <!-- Pricing Cards Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-7xl mx-auto">
+                
+                <!-- Card 1: Shared (Blue/Cyan) -->
+                <div class="group relative flex flex-col rounded-[2rem] bg-[#080c14] border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(6,182,212,0.15)]">
+                    <!-- Top Badge -->
+                    <div class="absolute -top-4 right-8 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg shadow-pink-500/30 z-20">
+                        <span class="text-xs font-bold text-white flex items-center gap-1">🔥 70% 小白首选</span>
+                    </div>
+                    
+                    <div class="p-8 flex flex-col h-full relative overflow-hidden rounded-[2rem]">
+                        <!-- Top Glow -->
+                        <div class="absolute top-0 left-0 w-full h-32 bg-cyan-500/10 blur-[60px] pointer-events-none"></div>
+
+                        <!-- Header -->
+                        <div class="flex items-start gap-4 mb-6 relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-cyan-900/30 flex items-center justify-center border border-cyan-500/20 text-cyan-400">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">共享账号</h3>
+                                <div class="text-xs text-cyan-400 mt-1">含 4 人车 · 隔离会话</div>
                             </div>
                         </div>
-                        <a href="go/gpt-shared" rel="nofollow sponsored noopener noreferrer" class="mt-6 block w-full py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-purple-600 hover:border-purple-600 hover:text-white text-center text-sm font-semibold text-gray-300 transition-all duration-300">立即体验</a>
+
+                        <!-- Price -->
+                        <div class="mb-8 relative z-10">
+                            <div class="flex items-end gap-2 mb-2">
+                                <span class="text-5xl font-bold text-white tracking-tight">¥52</span>
+                                <span class="text-gray-500 mb-1">/月</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-500 line-through">原价 ¥55</span>
+                                <span class="px-2 py-0.5 rounded bg-green-500/20 border border-green-500/30 text-xs font-bold text-green-400">省 7%</span>
+                            </div>
+                        </div>
+
+                        <!-- Features -->
+                        <ul class="space-y-4 mb-8 flex-grow relative z-10">
+                            <li class="flex items-center gap-3 text-gray-300 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span>高性价比体验 Plus</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-300 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span>标准响应速度</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-300 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span>自动发货，即买即用</span>
+                            </li>
+                        </ul>
+
+                        <!-- Button -->
+                        <a href="go/gpt-shared" class="relative w-full py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-center shadow-lg shadow-cyan-900/30 transition-all z-10">
+                            立即开通 (自动)
+                        </a>
                     </div>
                 </div>
 
-                <div class="relative group transform lg:scale-105 z-10">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-[2rem] blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-                    <div class="reveal relative p-7 rounded-[1.8rem] bg-gradient-to-b from-[#0c2e36] to-[#050508] border border-white/10 overflow-hidden" style="transition-delay: 0.1s;">
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[10px] font-bold tracking-widest uppercase px-4 py-1.5 rounded-b-xl shadow-[0_4px_12px_rgba(6,182,212,0.4)]">👑 站长推荐</div>
-                        <div class="relative z-10 mt-4">
-                            <div class="flex justify-between items-center mb-2"><div class="text-sm font-semibold text-cyan-400">尊享代充 / 升级</div></div>
-                            <div class="flex items-end gap-3 mb-2"><span class="text-4xl font-bold text-white">¥172<span class="text-2xl">.1</span></span><span class="text-sm text-gray-500 line-through decoration-gray-600">¥185</span><span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/20">省 ¥13</span></div>
-                            <div class="text-xs text-gray-500 mb-6">93折券后价</div>
-                            <div class="mb-8 p-3 rounded-xl bg-cyan-500/5 border border-dashed border-cyan-500/30 flex items-center justify-between cursor-pointer copy-code group/code transition-colors hover:bg-cyan-500/10" data-code="xmpick">
-                                <div class="flex flex-col"><span class="text-[10px] text-gray-400">限时优惠码</span><span class="text-sm font-mono font-bold text-cyan-300">xmpick</span></div>
-                                <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center group-hover/code:scale-110 transition-transform"><svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div>
+                <!-- Card 2: Plus Topup (Purple/Gold - Hero) -->
+                <div class="group relative flex flex-col rounded-[2rem] bg-[#080c14] border-2 border-indigo-500 hover:border-indigo-400 transition-all duration-300 scale-105 shadow-[0_0_50px_rgba(99,102,241,0.2)] z-10">
+                    <!-- Top Badge -->
+                    <div class="absolute -top-5 right-8 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30 z-20">
+                        <span class="text-xs font-bold text-black flex items-center gap-1">👑 老用户升级</span>
+                    </div>
+
+                    <div class="p-8 flex flex-col h-full relative overflow-hidden rounded-[2rem]">
+                        <!-- Top Glow -->
+                        <div class="absolute top-0 left-0 w-full h-40 bg-indigo-600/20 blur-[60px] pointer-events-none"></div>
+
+                        <!-- Header -->
+                        <div class="flex items-start gap-4 mb-6 relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-900/30 flex items-center justify-center border border-indigo-500/20 text-indigo-400">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                             </div>
-                            <div class="space-y-3 mb-6">
-                                <li class="flex items-center gap-3 text-sm text-white"><div class="w-5 h-5 rounded-full bg-cyan-500 flex items-center justify-center text-black"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div><span class="font-medium">无缝升级现有账号</span></li>
-                                <li class="flex items-center gap-3 text-sm text-white"><div class="w-5 h-5 rounded-full bg-cyan-500 flex items-center justify-center text-black"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div><span class="font-medium">保留所有历史记录</span></li>
-                                <li class="flex items-center gap-3 text-sm text-white"><div class="w-5 h-5 rounded-full bg-cyan-500 flex items-center justify-center text-black"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div><span class="font-medium">正规 Visa/Mastercard 结算</span></li>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Plus 正规代充</h3>
+                                <div class="text-xs text-indigo-300 mt-1">保留数据 · 正规代付</div>
                             </div>
-                            <div class="pt-5 border-t border-white/10">
-                                <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Perfect For</div>
-                                <div class="flex items-center gap-2 text-xs text-white">
-                                    <svg class="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                    长期使用者 / 程序员 / 需要保留记录者
-                                </div>
-                            </div>
-                            <a href="go/gpt-topup" rel="nofollow sponsored noopener noreferrer" class="mt-6 block w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-center text-sm font-bold text-white shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-[1.02] transition-all">立即升级 Plus</a>
+                            <div class="ml-auto px-2 py-1 rounded bg-indigo-500/20 border border-indigo-500/30 text-[10px] font-bold text-indigo-300">安全稳定</div>
                         </div>
+
+                        <!-- Price -->
+                        <div class="mb-8 relative z-10">
+                            <div class="flex items-end gap-2 mb-2">
+                                <span class="text-6xl font-bold text-white tracking-tight">¥172</span>
+                                <span class="text-gray-500 mb-1">/月</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-500 line-through">原价 ¥185</span>
+                                <span class="px-2 py-0.5 rounded bg-green-500/20 border border-green-500/30 text-xs font-bold text-green-400">券后 ¥160</span>
+                            </div>
+                        </div>
+
+                        <!-- Features -->
+                        <ul class="space-y-4 mb-8 flex-grow relative z-10">
+                            <li class="flex items-center gap-3 text-gray-200 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-500/50"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span class="font-medium">数据无价，历史对话完美保留</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-200 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-500/50"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span class="font-medium">正规支付，实体卡代付不封号</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-200 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-500/50"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span class="font-medium">人工审核，1小时内安全到账</span>
+                            </li>
+                             <li class="flex items-center gap-3 text-gray-200 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-500/50"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span class="font-medium">封号全额赔付 / 永久售后</span>
+                            </li>
+                        </ul>
+
+                        <!-- Button -->
+                        <a href="go/gpt-topup" class="relative w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-center text-lg shadow-xl shadow-indigo-900/40 transition-all transform hover:scale-[1.02] z-10 overflow-hidden">
+                            <span class="relative z-10">立即升级 (保留数据)</span>
+                             <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+                        </a>
                     </div>
                 </div>
 
-                <div class="group reveal relative flex flex-col p-6 rounded-[2rem] bg-gradient-to-b from-[#101533] to-[#050508] border border-white/5 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(59,130,246,0.2)]" style="transition-delay: 0.2s;">
-                    <div class="absolute -top-3 -right-3 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30 transform -rotate-3 z-20"><span class="text-[10px] font-bold text-white tracking-wider">🛡️ 商务独享</span></div>
-                    <div class="mt-4 mb-6">
-                        <div class="text-sm font-medium text-blue-400 mb-2">独享成品号</div>
-                        <div class="flex items-end gap-3"><span class="text-3xl font-bold text-white">¥153<span class="text-lg">.5</span></span><span class="text-sm text-gray-500 line-through decoration-gray-600">¥165</span><span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/20">省 ¥12</span></div>
-                        <div class="mt-2 inline-block px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-[10px] text-blue-300">🔒 100% 独立权限</div>
-                        <div class="mt-4 p-2 rounded-lg bg-indigo-500/10 border border-dashed border-indigo-500/30 flex items-center justify-between cursor-pointer copy-code group/code hover:bg-indigo-500/20 transition-colors" data-code="xmpick">
-                            <span class="text-[10px] text-indigo-300 ml-1">券后价 (码: xmpick)</span>
-                            <span class="w-6 h-6 rounded bg-indigo-500/20 flex items-center justify-center text-indigo-400"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></span>
+                <!-- Card 3: Exclusive (Emerald/Green) -->
+                <div class="group relative flex flex-col rounded-[2rem] bg-[#080c14] border border-emerald-500/30 hover:border-emerald-400/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(16,185,129,0.15)]">
+                    <!-- Top Badge -->
+                    <div class="absolute -top-4 right-8 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg shadow-cyan-500/30 z-20">
+                        <span class="text-xs font-bold text-white flex items-center gap-1">🔒 隐私首选</span>
+                    </div>
+
+                    <div class="p-8 flex flex-col h-full relative overflow-hidden rounded-[2rem]">
+                        <!-- Top Glow -->
+                        <div class="absolute top-0 left-0 w-full h-32 bg-emerald-500/10 blur-[60px] pointer-events-none"></div>
+
+                        <!-- Header -->
+                        <div class="flex items-start gap-4 mb-6 relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-900/30 flex items-center justify-center border border-emerald-500/20 text-emerald-400">
+                                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">独享成品号</h3>
+                                <div class="text-xs text-emerald-400 mt-1">一人一号 · 独享额度</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="space-y-3 mb-6 flex-grow">
-                        <li class="flex items-start gap-3 text-sm text-gray-300"><svg class="w-5 h-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg><span>一人一号 (独立邮箱/密码)</span></li>
-                        <li class="flex items-start gap-3 text-sm text-gray-300"><svg class="w-5 h-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>支持修改密码 / 绑定手机</span></li>
-                        <li class="flex items-start gap-3 text-sm text-gray-300"><svg class="w-5 h-5 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>赠送 $5 API Key 额度</span></li>
-                    </div>
-                    <div class="pt-5 border-t border-white/5">
-                        <div class="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Perfect For</div>
-                        <div class="flex items-center gap-2 text-xs text-gray-300">
-                            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            企业采购 / 隐私敏感者 / API开发者
+
+                        <!-- Price -->
+                        <div class="mb-8 relative z-10">
+                            <div class="flex items-end gap-2 mb-2">
+                                <span class="text-5xl font-bold text-white tracking-tight">¥153</span>
+                                <span class="text-gray-500 mb-1">/月</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-500 line-through">原价 ¥165</span>
+                                <span class="px-2 py-0.5 rounded bg-blue-500/20 border border-blue-500/30 text-xs font-bold text-blue-400">省 ¥12</span>
+                            </div>
                         </div>
+
+                        <!-- Features -->
+                        <ul class="space-y-4 mb-8 flex-grow relative z-10">
+                            <li class="flex items-center gap-3 text-gray-300 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span>一人一号，独立隐私</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-300 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span>支持改密 / 绑定手机</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-300 text-sm">
+                                <div class="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div>
+                                <span>赠送 $5 API 额度</span>
+                            </li>
+                        </ul>
+
+                        <!-- Button -->
+                        <a href="go/gpt-exclusive" class="relative w-full py-4 rounded-xl bg-[#0d1520] border border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400 font-bold text-center transition-all z-10">
+                            购买独享号
+                        </a>
                     </div>
-                    <a href="go/gpt-exclusive" rel="nofollow sponsored noopener noreferrer" class="mt-6 block w-full py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-blue-600 hover:border-blue-600 hover:text-white text-center text-sm font-semibold text-gray-300 transition-all duration-300">购买账号</a>
                 </div>
+            </div>
+            
+            <!-- Trust Strip -->
+            <div class="mt-20 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-6 text-center opacity-60 hover:opacity-100 transition-opacity">
+                 <div class="flex flex-col items-center">
+                    <svg class="w-8 h-8 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <div class="text-sm font-bold text-white">100% 正规支付</div>
+                 </div>
+                 <div class="flex flex-col items-center">
+                    <svg class="w-8 h-8 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    <div class="text-sm font-bold text-white">0 封号记录</div>
+                 </div>
+                 <div class="flex flex-col items-center">
+                    <svg class="w-8 h-8 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <div class="text-sm font-bold text-white">3min 极速发货</div>
+                 </div>
+                 <div class="flex flex-col items-center">
+                    <svg class="w-8 h-8 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <div class="text-sm font-bold text-white">24/7 在线售后</div>
+                 </div>
             </div>
         </div>
     </section>
@@ -904,6 +1035,8 @@
         });
 
         const navbar = document.getElementById('navbar');
+        let ticking = false;
+
         const toggleNavBg = () => {
             if (!navbar) return;
             if (window.scrollY > 20) {
@@ -913,9 +1046,16 @@
                 navbar.classList.remove('bg-[#020410]/80', 'backdrop-blur-xl', 'border-white/5');
                 navbar.classList.add('border-transparent', 'bg-transparent');
             }
+            ticking = false;
         };
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(toggleNavBg);
+                ticking = true;
+            }
+        });
         toggleNavBg();
-        window.addEventListener('scroll', toggleNavBg);
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
