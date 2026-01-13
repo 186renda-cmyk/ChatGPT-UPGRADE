@@ -11,24 +11,46 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "ChatGPT Plus vs Pro 深度对比：开通哪个更划算？",
-      "image": "https://gpt-upgrade.top/assets/og-image.jpg",
-      "datePublished": "2026-01-05",
-      "dateModified": "2026-01-05",
-      "author": {
-        "@type": "Organization",
-        "name": "GPT-Upgrade"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "GPT-Upgrade",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://gpt-upgrade.top/favicon.svg"
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "首页",
+            "item": "https://gpt-upgrade.top/index.html"
+          },{
+            "@type": "ListItem",
+            "position": 2,
+            "name": "情报局",
+            "item": "https://gpt-upgrade.top/blog/index.html"
+          },{
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Plus vs Pro 深度对比"
+          }]
+        },
+        {
+          "@type": "Article",
+          "headline": "ChatGPT Plus vs Pro 深度对比：开通哪个更划算？",
+          "image": "https://gpt-upgrade.top/assets/og-image.jpg",
+          "datePublished": "2026-01-13",
+          "dateModified": "2026-01-13",
+          "author": {
+            "@type": "Organization",
+            "name": "GPT-Upgrade"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "GPT-Upgrade",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://gpt-upgrade.top/favicon.svg"
+            }
+          },
+          "description": "ChatGPT Pro 每月 $200 值得买吗？相比 $20 的 Plus 版有哪些核心优势？本文从算力、模型权限、推理能力等多维度为您详细对比，助您理性消费。"
         }
-      },
-      "description": "全方位解析 ChatGPT Plus 与 ChatGPT Pro 的区别。从价格($20 vs $200)、o1无限推理、深度研究(Deep Research)到视频生成能力，助你做出最理性的订阅选择。"
+      ]
     }
     </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A 2 2 0 009 10.172V5L8 4z%22/></svg>">
@@ -96,13 +118,24 @@
     <main class="pt-32 pb-24 max-w-7xl mx-auto px-6">
         
         <!-- Breadcrumb -->
-        <div class="flex items-center gap-2 text-sm text-gray-500 mb-8 font-mono">
-            <a href="../index.html" class="hover:text-cyan-400 transition">Home</a>
-            <span>/</span>
-            <span class="text-gray-300">Blog</span>
-            <span>/</span>
-            <span class="text-cyan-400">ChatGPT Plus vs Pro</span>
-        </div>
+        <nav aria-label="Breadcrumb" class="mb-8">
+            <ol class="flex items-center gap-2 text-sm text-gray-500 font-mono list-none p-0 m-0 overflow-x-auto whitespace-nowrap">
+                <li>
+                    <a href="../index.html" class="hover:text-cyan-400 transition flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        首页
+                    </a>
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <a href="index.html" class="hover:text-cyan-400 transition">情报局</a>
+                </li>
+                <li class="flex items-center" aria-current="page">
+                    <svg class="w-4 h-4 text-gray-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <span class="text-purple-400">Plus vs Pro 深度对比</span>
+                </li>
+            </ol>
+        </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
