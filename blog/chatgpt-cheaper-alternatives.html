@@ -110,13 +110,24 @@
     <main class="pt-32 pb-24 max-w-7xl mx-auto px-6">
         
         <!-- Breadcrumb -->
-        <div class="flex items-center gap-2 text-sm text-gray-500 mb-8 font-mono">
-            <a href="../index.html" class="hover:text-cyan-400 transition">Home</a>
-            <span>/</span>
-            <span class="text-gray-300">Blog</span>
-            <span>/</span>
-            <span class="text-cyan-400">Cheaper Alternatives</span>
-        </div>
+        <nav aria-label="Breadcrumb" class="mb-8">
+            <ol class="flex items-center gap-2 text-sm text-gray-500 font-mono list-none p-0 m-0 overflow-x-auto whitespace-nowrap">
+                <li>
+                    <a href="../index.html" class="hover:text-cyan-400 transition flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        首页
+                    </a>
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <a href="index.html" class="hover:text-cyan-400 transition">情报局</a>
+                </li>
+                <li class="flex items-center" aria-current="page">
+                    <svg class="w-4 h-4 text-gray-600 mx-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <span class="text-green-400">ChatGPT 便宜替代方案</span>
+                </li>
+            </ol>
+        </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
