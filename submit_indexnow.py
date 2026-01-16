@@ -1,21 +1,47 @@
 import requests
 import json
+import xml.etree.ElementTree as ET
+import os
 
 # 配置信息
 host = "gpt-upgrade.top"
 key = "7b3d72e5dd7346fcb45156486fcb65d3"
 key_location = f"https://{host}/{key}.txt"
+sitemap_file = "sitemap.xml"
 
-# 需要提交的 URL 列表
-url_list = [
-    f"https://{host}/",
-    f"https://{host}/privacy",
-    f"https://{host}/terms",
-    f"https://{host}/blog",
-    f"https://{host}/blog/how-to-subscribe-chatgpt",
-    f"https://{host}/blog/chatgpt-go-vs-plus",
-    f"https://{host}/blog/chatgpt-plus-vs-pro"
-]
+def get_urls_from_sitemap(file_path):
+    """
+    从 sitemap.xml 文件中提取所有 URL
+    """
+    url_list = []
+    try:
+        if not os.path.exists(file_path):
+            print(f"❌ 找不到文件: {file_path}")
+            return []
+            
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+        
+        # 处理 XML 命名空间
+        namespace = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+        
+        for url in root.findall('ns:url/ns:loc', namespace):
+            if url.text:
+                url_list.append(url.text.strip())
+                
+        print(f"✅ 成功从 {file_path} 提取到 {len(url_list)} 个 URL")
+        return url_list
+        
+    except Exception as e:
+        print(f"❌ 解析 sitemap.xml 时出错: {e}")
+        return []
+
+# 获取 URL 列表
+url_list = get_urls_from_sitemap(sitemap_file)
+
+if not url_list:
+    print("⚠️ 未找到任何 URL，终止提交。")
+    exit(1)
 
 # 构造请求数据
 data = {
@@ -28,7 +54,7 @@ data = {
 # IndexNow API 地址 (Bing 和 Yandex 共享)
 api_url = "https://api.indexnow.org/indexnow"
 
-print("正在向 IndexNow 提交以下 URL:")
+print("\n正在向 IndexNow 提交以下 URL:")
 for url in url_list:
     print(f"- {url}")
 
