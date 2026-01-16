@@ -1,10 +1,13 @@
-/# 主页
-/ / 200
+# 购买/升级跳转 (302 Temporary Redirect)
+/go/gpt-shared    https://www.naifeistation.com/index/buy?id=238&invite=3903 302
+/go/gpt-exclusive https://www.naifeistation.com/index/buy?id=238&invite=3903 302
+/go/gpt-topup     https://www.naifeistation.com/index/buy?id=241&invite=3903 302
 
-# 购买/升级入口指向定价区
-/go/gpt-topup /#pricing 302
-/go/gpt-exclusive /#pricing 302
-/go/gpt-shared /#pricing 302
+# 合作伙伴/推广链接
+/go/pokepay       https://app.pokepay.cc/pages/invitation/regist?r=365888 302
+/go/okx           https://www.hfivpyichgod.com/zh-hans/join?channelId=ACE529411 302
 
-# 博客页面占位：跳转到站内博客区
-# /blog/* /#blog 302
+# 默认规则
+# 强制 HTTPS (如果平台未默认开启，通常 Cloudflare Pages 默认开启)
+# 规范化首页
+/index.html       / 301

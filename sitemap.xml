@@ -7,61 +7,55 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/index.html</loc>
-    <lastmod>2026-01-08</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://gpt-upgrade.top/blog/index.html</loc>
+    <loc>https://gpt-upgrade.top/blog/</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/chatgpt-cheaper-alternatives.html</loc>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-cheaper-alternatives</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/chatgpt-plus-payment-failed.html</loc>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-plus-payment-failed</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/chatgpt-plus-usage-limits.html</loc>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-plus-usage-limits</loc>
     <lastmod>2026-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/chatgpt-go-vs-plus.html</loc>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-go-vs-plus</loc>
     <lastmod>2026-01-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/chatgpt-plus-vs-pro.html</loc>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-plus-vs-pro</loc>
     <lastmod>2026-01-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/how-to-subscribe-chatgpt.html</loc>
+    <loc>https://gpt-upgrade.top/blog/how-to-subscribe-chatgpt</loc>
     <lastmod>2026-01-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/privacy.html</loc>
+    <loc>https://gpt-upgrade.top/privacy</loc>
     <lastmod>2026-01-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/terms.html</loc>
+    <loc>https://gpt-upgrade.top/terms</loc>
     <lastmod>2026-01-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

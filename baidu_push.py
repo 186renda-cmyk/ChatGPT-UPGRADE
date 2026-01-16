@@ -6,7 +6,6 @@ api_url = "http://data.zz.baidu.com/urls?site=https://gpt-upgrade.top&token=MkpV
 # 要推送的链接列表
 urls = [
     "https://gpt-upgrade.top/",
-    "https://gpt-upgrade.top/index.html",
     "https://gpt-upgrade.top/sitemap.xml"
 ]
 

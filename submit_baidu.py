@@ -9,13 +9,12 @@ api_url = "http://data.zz.baidu.com/urls?site=https://gpt-upgrade.top&token=MkpV
 host = "gpt-upgrade.top"
 url_list = [
     f"https://{host}/",
-    f"https://{host}/index.html",
-    f"https://{host}/privacy.html",
-    f"https://{host}/terms.html",
-    f"https://{host}/blog/index.html",
-    f"https://{host}/blog/how-to-subscribe-chatgpt.html",
-    f"https://{host}/blog/chatgpt-go-vs-plus.html",
-    f"https://{host}/blog/chatgpt-plus-vs-pro.html"
+    f"https://{host}/privacy",
+    f"https://{host}/terms",
+    f"https://{host}/blog",
+    f"https://{host}/blog/how-to-subscribe-chatgpt",
+    f"https://{host}/blog/chatgpt-go-vs-plus",
+    f"https://{host}/blog/chatgpt-plus-vs-pro"
 ]
 
 # 构造请求体：每行一个 URL
