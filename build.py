@@ -276,6 +276,33 @@ def reorder_head(soup):
                 head.append(tag)
                 head.append(soup.new_string('\n')) # Force newline for better formatting
 
+def inject_favicons(soup):
+    """Phase 2.5: Inject Standard Favicons"""
+    if not soup.head:
+        soup.insert(0, soup.new_tag('head'))
+    
+    head = soup.head
+    
+    # Remove existing icons
+    for link in head.find_all('link'):
+        rel = link.get('rel', [])
+        if isinstance(rel, list): rel = ' '.join(rel)
+        if 'icon' in rel or 'manifest' in rel or 'apple-touch-icon' in rel:
+            link.decompose()
+            
+    # Inject new icons
+    icons = [
+        {'rel': 'apple-touch-icon', 'sizes': '180x180', 'href': '/assets/apple-touch-icon.png'},
+        {'rel': 'icon', 'type': 'image/png', 'sizes': '32x32', 'href': '/assets/favicon-32x32.png'},
+        {'rel': 'icon', 'type': 'image/png', 'sizes': '16x16', 'href': '/assets/favicon-16x16.png'},
+        {'rel': 'manifest', 'href': '/assets/site.webmanifest'},
+        {'rel': 'shortcut icon', 'href': '/assets/favicon.ico'}
+    ]
+    
+    for icon_attrs in icons:
+        link = soup.new_tag('link', **icon_attrs)
+        head.append(link)
+
 def inject_seo(soup, meta):
     """Phase 2: SEO Injection Engine"""
     if not soup.head:
@@ -508,6 +535,7 @@ def update_homepage(articles):
         grid.append(BeautifulSoup(card_html, 'html.parser'))
         
     fix_links(soup)
+    inject_favicons(soup)
     with open(INDEX_PATH, 'w', encoding='utf-8') as f: f.write(str(soup))
 
 def update_blog_index(articles, layout_nav, layout_footer):
@@ -572,6 +600,7 @@ def update_blog_index(articles, layout_nav, layout_footer):
     if soup.head: soup.head.append(schema_script)
 
     fix_links(soup)
+    inject_favicons(soup)
     reorder_head(soup)
     with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f: f.write(soup.prettify())
 
@@ -594,6 +623,9 @@ def sync_static_pages(layout_nav, layout_footer):
             
         # 1. Link Governance
         fix_links(soup)
+        
+        # Inject Favicons
+        inject_favicons(soup)
         
         # 2. Layout Sync
         if soup.body:
@@ -647,6 +679,9 @@ def main():
             
         # Link Governance (Global)
         fix_links(soup)
+        
+        # Inject Favicons
+        inject_favicons(soup)
         
         # SEO Injection
         inject_seo(soup, meta)
