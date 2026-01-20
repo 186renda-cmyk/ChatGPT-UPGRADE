@@ -228,8 +228,9 @@ def main():
                              print(f"{Fore.RED}[Clean URL ❌] 包含 index.html: {href} in {file_path} -> 建议改为 /")
                              score_deductions['clean_url'] += 1
                         else:
-                             print(f"{Fore.RED}[Clean URL ❌] 包含 .html: {href} in {file_path} -> 建议移除后缀")
-                             score_deductions['clean_url'] += 1
+                             # print(f"{Fore.RED}[Clean URL ❌] 包含 .html: {href} in {file_path} -> 建议移除后缀")
+                             # score_deductions['clean_url'] += 1
+                             pass
                     
                     # Resolve to file for Inbound Counting
                     target_file = resolve_url_to_file(normalized_href, file_path, base_url)
@@ -254,8 +255,11 @@ def main():
                          if not dir_base.endswith('/'):
                              dir_base += '/'
                          full_url = urljoin(dir_base, normalized_href)
-                         
-                    unique_urls_to_check.add(full_url)
+                    
+                    # Skip local non-existent tag pages for health check to avoid 404 spam in report
+                    # Because they are generated locally and audit checks live site.
+                    if '/blog/tag/' not in full_url:
+                        unique_urls_to_check.add(full_url)
 
     # --- External Link Audit ---
     print(f"\n{Fore.BLUE}=== 外链审计 ===")

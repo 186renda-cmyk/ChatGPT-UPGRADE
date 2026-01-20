@@ -94,6 +94,16 @@ def clean_url(url):
     
     return url + anchor
 
+def slugify(text):
+    """Create URL-friendly slug from text"""
+    # Lowercase
+    text = text.lower()
+    # Replace spaces with hyphens
+    text = re.sub(r'\s+', '-', text)
+    # Remove multiple hyphens
+    text = re.sub(r'-+', '-', text)
+    return text.strip('-')
+
 def is_safe_zone(tag):
     """
     Check if tag is inside safe zones (aside, sticky-sidebar)
@@ -449,6 +459,41 @@ def inject_breadcrumbs(soup, meta):
     '''
     main.insert(0, BeautifulSoup(breadcrumb_html, 'html.parser'))
 
+def inject_tags(soup, meta):
+    """Phase 3.5: Tag Cloud Injection"""
+    article = soup.find('article')
+    if not article: return
+    
+    # Remove existing tags container
+    for div in article.find_all('div', class_='tags-container'):
+        div.decompose()
+        
+    if not meta['keywords']: return
+    
+    tags_html = ""
+    for tag in meta['keywords']:
+        if not tag.strip(): continue
+        tag_slug = slugify(tag.strip())
+        tag_url = f"/blog/tag/{tag_slug}"
+        tags_html += f'''
+        <a href="{tag_url}" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-900/20 transition-all duration-300">
+            #{tag}
+        </a>
+        '''
+        
+    container_html = f'''
+    <div class="flex flex-wrap gap-2 mt-8 mb-8 pt-8 border-t border-white/5 tags-container">
+        {tags_html}
+    </div>
+    '''
+    
+    # Insert before related posts or at end of article
+    related = article.find('div', class_='related-posts-container')
+    if related:
+        related.insert_before(BeautifulSoup(container_html, 'html.parser'))
+    else:
+        article.append(BeautifulSoup(container_html, 'html.parser'))
+
 def inject_related_posts(soup, current_meta, all_articles):
     """Phase 3: Smart Interlinking"""
     article = soup.find('article')
@@ -502,6 +547,35 @@ def inject_related_posts(soup, current_meta, all_articles):
     
     article.append(BeautifulSoup(container_html, 'html.parser'))
 
+def create_card_html(post, index):
+    """Generate consistent card HTML for lists"""
+    style = CARD_STYLES[index % len(CARD_STYLES)]
+    return f'''
+    <article class="group relative flex flex-col rounded-[2rem] bg-white/[0.02] border border-white/5 {style['hover_border']} overflow-hidden transition-all duration-300 hover:-translate-y-1">
+        <a href="{post['url']}" class="absolute inset-0 z-10" aria-label="阅读文章"></a>
+        <div class="h-48 bg-gradient-to-br {style['bg_gradient']} relative overflow-hidden">
+            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+            <div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                <svg class="w-24 h-24 text-white {style['icon_shadow']}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="{style['icon_path']}"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="p-8 flex flex-col flex-grow">
+            <div class="flex items-center gap-3 text-xs text-gray-500 mb-4">
+                <span>{post['date']}</span>
+                <span class="w-1 h-1 rounded-full bg-gray-700"></span>
+                <span>Article</span>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-3 {style['text_highlight']} transition-colors">{post['title']}</h2>
+            <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow line-clamp-3">{post['description']}</p>
+            <div class="flex items-center text-sm font-bold {style['link_color']} group-hover:translate-x-1 transition-transform">
+                阅读全文 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+            </div>
+        </div>
+    </article>
+    '''
+
 def update_homepage(articles):
     """Update Homepage Latest News"""
     if not os.path.exists(INDEX_PATH): return
@@ -538,6 +612,68 @@ def update_homepage(articles):
     inject_favicons(soup)
     with open(INDEX_PATH, 'w', encoding='utf-8') as f: f.write(str(soup))
 
+def generate_tag_pages(tags_map, layout_nav, layout_footer):
+    """Generate static pages for each tag"""
+    tag_dir = os.path.join(BLOG_DIR, 'tag')
+    if os.path.exists(tag_dir):
+        import shutil
+        shutil.rmtree(tag_dir)
+    os.makedirs(tag_dir)
+    
+    if not os.path.exists(BLOG_INDEX_PATH): return
+    with open(BLOG_INDEX_PATH, 'r', encoding='utf-8') as f:
+        template_html = f.read()
+        
+    for tag, articles in tags_map.items():
+        if not tag.strip(): continue
+        tag_slug = slugify(tag.strip())
+        soup = BeautifulSoup(template_html, 'html.parser')
+        
+        # 1. Update Meta
+        title = f"标签: {tag} - GPT-Upgrade"
+        if soup.title: soup.title.string = title
+        
+        # 2. Update Hero Title
+        main = soup.find('main')
+        if main:
+            h1 = main.find('h1')
+            if h1:
+                h1.clear()
+                h1.append(f"Tag: {tag}")
+        
+        # 3. Clear and Fill Grid
+        grid = soup.find('div', class_=re.compile(r'grid.*cols'))
+        if grid:
+            grid.clear()
+            for i, post in enumerate(articles):
+                card_html = create_card_html(post, i)
+                grid.append(BeautifulSoup(card_html, 'html.parser'))
+                
+        # 4. Layout Sync
+        if soup.body:
+            old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
+            if old_nav: old_nav.decompose()
+            
+            # Modify Nav for Blog Context
+            current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+            blog_link = current_nav.find('a', href=re.compile(r'#blog'))
+            if blog_link: blog_link['href'] = '/blog/'
+            
+            soup.body.insert(0, current_nav)
+            
+            old_footer = soup.find('footer')
+            if old_footer: old_footer.decompose()
+            soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
+            
+        # 5. Fix Links & Favicons
+        fix_links(soup)
+        inject_favicons(soup)
+        reorder_head(soup)
+        
+        # 6. Save
+        output_path = os.path.join(tag_dir, f"{tag_slug}.html")
+        with open(output_path, 'w', encoding='utf-8') as f: f.write(soup.prettify())
+
 def update_blog_index(articles, layout_nav, layout_footer):
     """Rebuild /blog/index.html"""
     if not os.path.exists(BLOG_INDEX_PATH): return
@@ -548,7 +684,13 @@ def update_blog_index(articles, layout_nav, layout_footer):
     if soup.body:
         old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
         if old_nav: old_nav.decompose()
-        soup.body.insert(0, BeautifulSoup(str(layout_nav), 'html.parser'))
+        
+        # Modify Nav for Blog Context
+        current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+        blog_link = current_nav.find('a', href=re.compile(r'#blog'))
+        if blog_link: blog_link['href'] = '/blog/'
+        
+        soup.body.insert(0, current_nav)
         
         old_footer = soup.find('footer')
         if old_footer: old_footer.decompose()
@@ -561,32 +703,7 @@ def update_blog_index(articles, layout_nav, layout_footer):
         if grid:
             grid.clear()
             for i, post in enumerate(articles):
-                style = CARD_STYLES[i % len(CARD_STYLES)]
-                card_html = f'''
-                <article class="group relative flex flex-col rounded-[2rem] bg-white/[0.02] border border-white/5 {style['hover_border']} overflow-hidden transition-all duration-300 hover:-translate-y-1">
-                    <a href="{post['url']}" class="absolute inset-0 z-10" aria-label="阅读文章"></a>
-                    <div class="h-48 bg-gradient-to-br {style['bg_gradient']} relative overflow-hidden">
-                        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity duration-500">
-                            <svg class="w-24 h-24 text-white {style['icon_shadow']}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="{style['icon_path']}"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="p-8 flex flex-col flex-grow">
-                        <div class="flex items-center gap-3 text-xs text-gray-500 mb-4">
-                            <span>{post['date']}</span>
-                            <span class="w-1 h-1 rounded-full bg-gray-700"></span>
-                            <span>Article</span>
-                        </div>
-                        <h2 class="text-xl font-bold text-white mb-3 {style['text_highlight']} transition-colors">{post['title']}</h2>
-                        <p class="text-sm text-gray-400 leading-relaxed mb-6 flex-grow line-clamp-3">{post['description']}</p>
-                        <div class="flex items-center text-sm font-bold {style['link_color']} group-hover:translate-x-1 transition-transform">
-                            阅读全文 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                        </div>
-                    </div>
-                </article>
-                '''
+                card_html = create_card_html(post, i)
                 grid.append(BeautifulSoup(card_html, 'html.parser'))
 
     # Update Schema
@@ -670,7 +787,15 @@ def main():
     all_articles.sort(key=lambda x: x['date'], reverse=True)
     
     # 2. Process Blog Posts
+    tags_map = {}
     for meta in all_articles:
+        # Collect Tags
+        for tag in meta['keywords']:
+            tag = tag.strip()
+            if not tag: continue
+            if tag not in tags_map: tags_map[tag] = []
+            tags_map[tag].append(meta)
+            
         filepath = os.path.join(BLOG_DIR, meta['filename'])
         print(f"Processing {meta['filename']}...")
         
@@ -691,8 +816,16 @@ def main():
         if soup.body:
             old_nav = soup.body.find('nav', id='navbar')
             if old_nav: old_nav.decompose()
+            
+            # 3. Modify Nav for Blog Context (Point "情报局" to /blog/)
+            current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+            # Find the link to #blog and change it to /blog/
+            blog_link = current_nav.find('a', href=re.compile(r'#blog'))
+            if blog_link:
+                blog_link['href'] = '/blog/'
+            
             # Insert new nav at top of body
-            soup.body.insert(0, BeautifulSoup(str(layout_nav), 'html.parser'))
+            soup.body.insert(0, current_nav)
             
             old_footer = soup.find('footer')
             if old_footer: old_footer.decompose()
@@ -702,6 +835,7 @@ def main():
         inject_breadcrumbs(soup, meta)
         
         # Smart Interlinking
+        inject_tags(soup, meta)
         inject_related_posts(soup, meta, all_articles)
         
         # Save
@@ -715,6 +849,10 @@ def main():
     # 4. Rebuild Blog Index
     print("Updating Blog Index...")
     update_blog_index(all_articles, layout_nav, layout_footer)
+    
+    # 4.5 Generate Tag Pages
+    print("Generating Tag Pages...")
+    generate_tag_pages(tags_map, layout_nav, layout_footer)
     
     # 5. Sync Static Pages
     print("Syncing Static Pages...")
