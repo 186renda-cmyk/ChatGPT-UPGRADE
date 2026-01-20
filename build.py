@@ -575,6 +575,45 @@ def update_blog_index(articles, layout_nav, layout_footer):
     reorder_head(soup)
     with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f: f.write(soup.prettify())
 
+def sync_static_pages(layout_nav, layout_footer):
+    """
+    Sync layout and governance for static pages (privacy.html, terms.html)
+    """
+    static_pages = ['privacy.html', 'terms.html']
+    
+    for filename in static_pages:
+        filepath = os.path.join(BASE_DIR, filename)
+        if not os.path.exists(filepath):
+            print(f"Warning: Static page {filename} not found.")
+            continue
+            
+        print(f"Processing static page: {filename}...")
+        
+        with open(filepath, 'r', encoding='utf-8') as f:
+            soup = BeautifulSoup(f.read(), 'html.parser')
+            
+        # 1. Link Governance
+        fix_links(soup)
+        
+        # 2. Layout Sync
+        if soup.body:
+            # Replace Nav
+            old_nav = soup.body.find('nav')
+            if old_nav: old_nav.decompose()
+            soup.body.insert(0, BeautifulSoup(str(layout_nav), 'html.parser'))
+            
+            # Replace Footer
+            old_footer = soup.find('footer')
+            if old_footer: old_footer.decompose()
+            soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
+            
+        # 3. Head Governance
+        reorder_head(soup)
+        
+        # Save
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(soup.prettify())
+
 def main():
     print("Starting build process...")
     
@@ -641,6 +680,10 @@ def main():
     # 4. Rebuild Blog Index
     print("Updating Blog Index...")
     update_blog_index(all_articles, layout_nav, layout_footer)
+    
+    # 5. Sync Static Pages
+    print("Syncing Static Pages...")
+    sync_static_pages(layout_nav, layout_footer)
     
     print("Build Complete!")
 

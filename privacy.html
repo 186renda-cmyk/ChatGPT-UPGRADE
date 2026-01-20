@@ -1,96 +1,319 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隐私政策 | GPT-Upgrade</title>
-    <meta name="description" content="GPT-Upgrade 隐私政策。我们如何收集、使用和保护您的个人信息。" />
-    <link rel="canonical" href="https://gpt-upgrade.top/privacy" />
-    <meta name="robots" content="noindex, follow">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A 2 2 0 009 10.172V5L8 4z%22/></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
+<html class="scroll-smooth" lang="zh-CN">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   隐私政策 | GPT-Upgrade
+  </title>
+  <meta content="GPT-Upgrade 隐私政策。我们如何收集、使用和保护您的个人信息。" name="description">
+   <link href="https://gpt-upgrade.top/privacy" rel="canonical"/>
+   <meta content="noindex, follow" name="robots"/>
+   <link href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22&gt;&lt;path d=%22M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A 2 2 0 009 10.172V5L8 4z%22/&gt;&lt;/svg&gt;" rel="icon"/>
+   <script src="https://cdn.tailwindcss.com">
+   </script>
+   <script>
+    tailwind.config = {
             theme: {
                 extend: {
                     colors: { background: '#020410' }
                 }
             }
         }
-    </script>
-    <style>
-        html, body { background-color: #020410; color: #d1d5db; font-family: system-ui, -apple-system, sans-serif; }
+   </script>
+   <style>
+    html, body { background-color: #020410; color: #d1d5db; font-family: system-ui, -apple-system, sans-serif; }
         .glass-nav { background: rgba(2, 4, 16, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         h1, h2, h3 { color: #fff; font-weight: 700; }
         h2 { margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem; }
         p { margin-bottom: 1rem; line-height: 1.7; }
         ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
         li { margin-bottom: 0.5rem; }
-    </style>
-</head>
-<body class="antialiased">
-    <nav class="fixed top-0 w-full z-50 glass-nav">
-        <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 p-[1px]">
-                    <div class="w-full h-full rounded-lg bg-black flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A 2 2 0 009 10.172V5L8 4z"/></svg>
-                    </div>
-                </div>
-                <span class="text-xl font-bold tracking-tight text-white">GPT-Upgrade</span>
-            </a>
-            <a href="/" class="text-sm text-gray-400 hover:text-white transition">返回首页</a>
+   </style>
+  </meta>
+ </head>
+ <body class="antialiased">
+  <nav class="fixed top-0 w-full z-50 transition-all duration-300 border-b border-transparent bg-transparent" id="navbar">
+   <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a class="flex items-center gap-3 group" href="/">
+     <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 p-[1px]">
+      <div class="w-full h-full rounded-lg bg-black flex items-center justify-center">
+       <svg class="w-5 h-5 text-white group-hover:text-cyan-300 transition-colors" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+        </path>
+       </svg>
+      </div>
+     </div>
+     <span class="text-xl font-bold tracking-tight text-white">
+      GPT-Upgrade
+      <span class="text-cyan-400">
+       .TOP
+      </span>
+     </span>
+    </a>
+    <div class="hidden md:flex items-center gap-8">
+     <a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#pricing">
+      价格方案
+     </a>
+     <a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#features">
+      GPT-5.2 能力
+     </a>
+     <a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#blog">
+      情报局
+     </a>
+     <a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#faq">
+      常见问题
+     </a>
+    </div>
+    <a class="group relative px-6 py-2.5 rounded-full bg-white text-black text-sm font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all overflow-hidden" href="/#pricing">
+     <span class="relative z-10 flex items-center gap-2">
+      立即开通
+      <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+       <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+       </path>
+      </svg>
+     </span>
+     <div class="absolute inset-0 bg-gradient-to-r from-indigo-100 to-cyan-100 opacity-0 group-hover:opacity-100 transition-opacity">
+     </div>
+    </a>
+   </div>
+  </nav>
+  <main class="max-w-4xl mx-auto px-6 pt-32 pb-24">
+   <h1 class="text-4xl md:text-5xl mb-8">
+    隐私政策
+   </h1>
+   <p class="text-gray-500 mb-12">
+    最后更新日期：2026年1月8日
+   </p>
+   <section class="prose prose-invert max-w-none">
+    <p>
+     欢迎访问 GPT-Upgrade（以下简称"我们"）。我们非常重视您的隐私保护。本隐私政策旨在向您说明我们在您使用我们的网站和服务时如何收集、使用、存储和保护您的个人信息。
+    </p>
+    <h2>
+     1. 我们收集的信息
+    </h2>
+    <p>
+     为了向您提供服务，我们可能会收集以下类型的信息：
+    </p>
+    <ul>
+     <li>
+      <strong>
+       订单信息：
+      </strong>
+      当您购买我们的服务时，我们需要收集您的联系方式（如电子邮箱）以便发送账号信息或充值凭证。
+     </li>
+     <li>
+      <strong>
+       支付信息：
+      </strong>
+      所有的支付处理均通过第三方安全支付网关（如 Stripe）进行，我们
+      <strong>
+       不会
+      </strong>
+      在服务器上存储您的完整信用卡号或敏感支付验证信息。
+     </li>
+     <li>
+      <strong>
+       使用数据：
+      </strong>
+      我们可能会收集有关您如何访问和使用网站的非个人识别信息，例如浏览器类型、访问时间、页面停留时间等，用于优化网站体验。
+     </li>
+    </ul>
+    <h2>
+     2. 信息的使用
+    </h2>
+    <p>
+     我们收集的信息主要用于以下用途：
+    </p>
+    <ul>
+     <li>
+      处理您的订单并交付服务（如 ChatGPT Plus 代充或账号发送）。
+     </li>
+     <li>
+      向您发送必要的服务通知（如订单确认、售后回复）。
+     </li>
+     <li>
+      改善我们的网站功能和用户体验。
+     </li>
+     <li>
+      防止欺诈行为，确保交易安全。
+     </li>
+    </ul>
+    <h2>
+     3. 信息共享与披露
+    </h2>
+    <p>
+     我们承诺不会出售、出租或以其他方式将您的个人信息透露给第三方，但在以下情况除外：
+    </p>
+    <ul>
+     <li>
+      <strong>
+       服务提供商：
+      </strong>
+      我们可能会与协助我们运营网站、开展业务或为您服务的第三方（如支付处理商）共享必要信息。这些第三方有义务对您的信息保密。
+     </li>
+     <li>
+      <strong>
+       法律要求：
+      </strong>
+      如果法律、法规要求或为了响应有效的法律程序（如传票、法院命令），我们可能会披露您的信息。
+     </li>
+    </ul>
+    <h2>
+     4. 数据安全
+    </h2>
+    <p>
+     我们采取合理的安全措施（包括 SSL 加密技术）来保护您的个人信息免受未经授权的访问、使用或披露。然而，请注意，没有任何互联网传输或电子存储方法是 100% 安全的。
+    </p>
+    <h2>
+     5. Cookie 的使用
+    </h2>
+    <p>
+     我们的网站可能会使用 Cookie 来增强您的浏览体验。您可以根据需要调整浏览器设置以拒绝 Cookie，但这可能会影响您使用网站的某些功能。
+    </p>
+    <h2>
+     6. 隐私政策的更新
+    </h2>
+    <p>
+     我们可能会不时更新本隐私政策。任何更改将在本页面上发布，建议您定期查阅。
+    </p>
+    <h2>
+     7. 联系我们
+    </h2>
+    <p>
+     如果您对本隐私政策有任何疑问，请通过以下方式联系我们：
+    </p>
+    <p>
+     电子邮箱：support@gpt-upgrade.top
+    </p>
+   </section>
+  </main>
+  <footer class="bg-[#020410] border-t border-white/5 pt-20 pb-10">
+   <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+     <div class="col-span-1 md:col-span-1">
+      <a class="flex items-center gap-2 mb-6" href="/">
+       <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 p-[1px]">
+        <div class="w-full h-full rounded-lg bg-black flex items-center justify-center">
+         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+          <path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A 2 2 0 009 10.172V5L8 4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          </path>
+         </svg>
         </div>
-    </nav>
-
-    <main class="max-w-4xl mx-auto px-6 pt-32 pb-24">
-        <h1 class="text-4xl md:text-5xl mb-8">隐私政策</h1>
-        <p class="text-gray-500 mb-12">最后更新日期：2026年1月8日</p>
-
-        <section class="prose prose-invert max-w-none">
-            <p>欢迎访问 GPT-Upgrade（以下简称"我们"）。我们非常重视您的隐私保护。本隐私政策旨在向您说明我们在您使用我们的网站和服务时如何收集、使用、存储和保护您的个人信息。</p>
-
-            <h2>1. 我们收集的信息</h2>
-            <p>为了向您提供服务，我们可能会收集以下类型的信息：</p>
-            <ul>
-                <li><strong>订单信息：</strong> 当您购买我们的服务时，我们需要收集您的联系方式（如电子邮箱）以便发送账号信息或充值凭证。</li>
-                <li><strong>支付信息：</strong> 所有的支付处理均通过第三方安全支付网关（如 Stripe）进行，我们<strong>不会</strong>在服务器上存储您的完整信用卡号或敏感支付验证信息。</li>
-                <li><strong>使用数据：</strong> 我们可能会收集有关您如何访问和使用网站的非个人识别信息，例如浏览器类型、访问时间、页面停留时间等，用于优化网站体验。</li>
-            </ul>
-
-            <h2>2. 信息的使用</h2>
-            <p>我们收集的信息主要用于以下用途：</p>
-            <ul>
-                <li>处理您的订单并交付服务（如 ChatGPT Plus 代充或账号发送）。</li>
-                <li>向您发送必要的服务通知（如订单确认、售后回复）。</li>
-                <li>改善我们的网站功能和用户体验。</li>
-                <li>防止欺诈行为，确保交易安全。</li>
-            </ul>
-
-            <h2>3. 信息共享与披露</h2>
-            <p>我们承诺不会出售、出租或以其他方式将您的个人信息透露给第三方，但在以下情况除外：</p>
-            <ul>
-                <li><strong>服务提供商：</strong> 我们可能会与协助我们运营网站、开展业务或为您服务的第三方（如支付处理商）共享必要信息。这些第三方有义务对您的信息保密。</li>
-                <li><strong>法律要求：</strong> 如果法律、法规要求或为了响应有效的法律程序（如传票、法院命令），我们可能会披露您的信息。</li>
-            </ul>
-
-            <h2>4. 数据安全</h2>
-            <p>我们采取合理的安全措施（包括 SSL 加密技术）来保护您的个人信息免受未经授权的访问、使用或披露。然而，请注意，没有任何互联网传输或电子存储方法是 100% 安全的。</p>
-
-            <h2>5. Cookie 的使用</h2>
-            <p>我们的网站可能会使用 Cookie 来增强您的浏览体验。您可以根据需要调整浏览器设置以拒绝 Cookie，但这可能会影响您使用网站的某些功能。</p>
-
-            <h2>6. 隐私政策的更新</h2>
-            <p>我们可能会不时更新本隐私政策。任何更改将在本页面上发布，建议您定期查阅。</p>
-
-            <h2>7. 联系我们</h2>
-            <p>如果您对本隐私政策有任何疑问，请通过以下方式联系我们：</p>
-            <p>电子邮箱：support@gpt-upgrade.top</p>
-        </section>
-    </main>
-
-    <footer class="border-t border-white/5 py-12 text-center text-sm text-gray-600">
-        &copy; 2025 GPT-Upgrade.TOP. All rights reserved.
-    </footer>
-</body>
+       </div>
+       <span class="font-bold text-white">
+        GPT-Upgrade
+       </span>
+      </a>
+      <p class="text-sm text-gray-500 leading-relaxed mb-6">
+       消除支付阻碍，直达原生 ChatGPT Plus。采用美区正规企业卡结算，为您的 GPT-4o 与 o1 创新工作流提供零风险、不掉线的稳定护航。
+      </p>
+      <div class="flex items-center gap-2 text-xs text-green-400 bg-green-500/5 px-3 py-1.5 rounded-full border border-green-500/10 w-fit">
+       <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse">
+       </span>
+       All Systems Operational
+      </div>
+     </div>
+     <div>
+      <h4 class="text-white font-bold mb-6">
+       产品服务
+      </h4>
+      <ul class="space-y-4 text-sm text-gray-500">
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/#pricing">
+         ChatGPT Plus 代充
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/#pricing">
+         独享成品号
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/#pricing">
+         API Key 购买
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/#pricing">
+         Team 团队版
+        </a>
+       </li>
+      </ul>
+     </div>
+     <div>
+      <h4 class="text-white font-bold mb-6">
+       资源中心
+      </h4>
+      <ul class="space-y-4 text-sm text-gray-500">
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/blog/how-to-subscribe-chatgpt">
+         支付订阅指南
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/blog/chatgpt-plus-vs-pro">
+         Plus vs Pro 评测
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/blog/chatgpt-go-vs-plus">
+         Go vs Plus 对比
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-cyan-400 transition" href="/#faq">
+         帮助文档 / FAQ
+        </a>
+       </li>
+      </ul>
+     </div>
+     <div>
+      <h4 class="text-white font-bold mb-6">
+       安全保障
+      </h4>
+      <ul class="space-y-4 text-sm text-gray-500">
+       <li>
+        <a class="hover:text-white transition" href="/privacy">
+         隐私政策 (Privacy)
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-white transition" href="/terms">
+         服务条款 (Terms)
+        </a>
+       </li>
+       <li>
+        <a class="hover:text-white transition" href="/#">
+         退款政策 (Refund)
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+    <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+     <div class="text-xs text-gray-600">
+      © 2025 GPT-Upgrade.TOP. All rights reserved. Not affiliated with OpenAI.
+     </div>
+     <div class="flex items-center gap-4 opacity-30 grayscale hover:grayscale-0 transition-all">
+      <svg class="h-6 w-auto" fill="currentColor" viewbox="0 0 36 12">
+       <path d="M12.9 8.2L14.7 2.1H17.2L15.3 8.2H12.9ZM22.1 2.2C21.6 2 20.8 1.8 19.8 1.8C17.3 1.8 15.5 3.1 15.5 5.6C15.5 9.2 20.6 9.3 20.6 10.9C20.6 11.4 19.9 12 18.2 12C17.2 12 15.7 11.7 15 11.4L14.6 13.6C15.5 14 17.2 14.3 18.7 14.3C21.5 14.3 23.3 12.9 23.3 10.7C23.3 7.3 18.2 7.1 18.2 5.4C18.2 4.9 18.8 4.3 20.2 4.3C20.9 4.3 22 4.4 22.8 4.8L22.1 2.2ZM28.5 8.2L28.9 6C29 5.5 29 5.2 28.7 4.9C28.4 4.5 27.6 4.1 26.6 4.1C25.3 4.1 24.9 5.1 24.5 6.7L23.6 11.2H21L22.7 2.1H25.3L25.4 4.5C25.9 3.6 26.9 2.1 28.6 2.1C30.2 2.1 31.4 3.4 31.2 5.5L30.6 8.2H28.5ZM36 8.2H33.5L34.1 5C34.2 4.5 34.1 4.1 33.9 3.8C33.7 3.5 33.3 3.3 32.7 3.3C32.2 3.3 31.6 3.7 31.4 4.2L30.3 8.2H27.8L29.6 2.1H32.1L32.2 3.5C32.8 2.6 33.9 2.1 35.1 2.1C36.7 2.1 37.8 3.3 37.6 5.5L36.9 8.2H36Z">
+       </path>
+      </svg>
+      <svg class="h-6 w-auto" fill="currentColor" viewbox="0 0 36 22">
+       <circle cx="12" cy="11" fill-opacity="0.6" r="11">
+       </circle>
+       <circle cx="24" cy="11" fill-opacity="0.6" r="11">
+       </circle>
+       <path d="M18 11V11C18 7.3 16.2 4 13.4 2C16.3 4.1 18 7.4 18 11C18 14.6 16.3 17.9 13.4 20C16.2 18 18 14.7 18 11Z">
+       </path>
+      </svg>
+      <span class="text-xs font-bold font-sans tracking-tighter">
+       Powered by Stripe
+      </span>
+     </div>
+    </div>
+   </div>
+  </footer>
+ </body>
 </html>
