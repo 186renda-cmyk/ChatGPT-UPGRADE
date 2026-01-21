@@ -50,9 +50,12 @@ def load_config():
 
 def get_all_html_files():
     """
-    recursively find all html files
+    recursively find all html files, excluding specific system/verification files
     """
-    return [f for f in glob.glob('**/*.html', recursive=True)]
+    files = [f for f in glob.glob('**/*.html', recursive=True)]
+    # Files to exclude from audit
+    ignored_files = {'404.html', 'googlea685aa8ff3686b48.html'}
+    return [f for f in files if os.path.basename(f) not in ignored_files]
 
 def resolve_url_to_file(url, current_file_path, base_url):
     """

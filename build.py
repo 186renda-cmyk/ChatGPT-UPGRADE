@@ -781,7 +781,20 @@ def update_blog_index(articles, layout_nav, layout_footer):
             schema_items = []
             for i, post in enumerate(page_posts):
                 schema_items.append({"@type": "ListItem", "position": i + 1, "url": f"https://gpt-upgrade.top{post['url']}"})
-            schema_data = {"@context": "https://schema.org", "@type": "CollectionPage", "headline": f"GPT-Upgrade 情报局 {cat_slug}", "description": "最新的 AI 行业资讯、ChatGPT 使用教程与评测。", "mainEntity": {"@type": "ItemList", "itemListElement": schema_items}}
+            
+            cat_name = CATEGORIES[cat_slug]['name']
+            headline_suffix = "" if cat_slug == 'all' else f" - {cat_name}"
+            
+            schema_data = {
+                "@context": "https://schema.org", 
+                "@type": "CollectionPage", 
+                "headline": f"GPT-Upgrade 情报局{headline_suffix}", 
+                "description": "最新的 AI 行业资讯、ChatGPT 使用教程与评测。", 
+                "mainEntity": {
+                    "@type": "ItemList", 
+                    "itemListElement": schema_items
+                }
+            }
             schema_script = soup.new_tag('script', type='application/ld+json')
             schema_script.string = json.dumps(schema_data, indent=2, ensure_ascii=False)
             if soup.head: soup.head.append(schema_script)
@@ -837,6 +850,53 @@ def sync_static_pages(layout_nav, layout_footer):
             f.write(soup.prettify())
 
 
+
+def update_sitemap(articles):
+    """Generate sitemap.xml"""
+    sitemap_path = os.path.join(BASE_DIR, 'sitemap.xml')
+    base_url = "https://gpt-upgrade.top"
+    today = datetime.date.today().isoformat()
+    
+    xml_content = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml_content.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    
+    # Helper to add url
+    def add_url(loc, lastmod, freq, priority):
+        xml_content.append('  <url>')
+        xml_content.append(f'    <loc>{base_url}{loc}</loc>')
+        xml_content.append(f'    <lastmod>{lastmod}</lastmod>')
+        xml_content.append(f'    <changefreq>{freq}</changefreq>')
+        xml_content.append(f'    <priority>{priority}</priority>')
+        xml_content.append('  </url>')
+
+    # 1. Homepage
+    add_url('/', today, 'daily', '1.0')
+    
+    # 2. Blog Index
+    add_url('/blog/', today, 'daily', '0.9')
+    
+    # 3. Blog Posts
+    for post in articles:
+        # url already comes clean from get_article_metadata (e.g. /blog/post-name)
+        add_url(post['url'], post['date'], 'weekly', '0.8')
+        
+    # 4. Category Pages (Generated in update_blog_index)
+    # We should add them for better SEO coverage
+    for cat_slug in CATEGORIES.keys():
+        if cat_slug == 'all': continue
+        add_url(f'/blog/category/{cat_slug}', today, 'weekly', '0.8')
+        
+    # 5. Static Pages
+    static_pages = ['privacy', 'terms']
+    for page in static_pages:
+        # Check if file exists to get mtime? Or just use today
+        # For simplicity, use today as we are rebuilding
+        add_url(f'/{page}', today, 'monthly', '0.5')
+        
+    xml_content.append('</urlset>')
+    
+    with open(sitemap_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(xml_content))
 
 def main():
     print("Starting build process...")
@@ -922,6 +982,10 @@ def main():
     # 5. Sync Static Pages
     print("Syncing Static Pages...")
     sync_static_pages(layout_nav, layout_footer)
+    
+    # 6. Update Sitemap
+    print("Updating Sitemap...")
+    update_sitemap(all_articles)
     
     print("Build Complete!")
 
