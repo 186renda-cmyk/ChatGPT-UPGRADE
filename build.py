@@ -9,6 +9,27 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BLOG_DIR = os.path.join(BASE_DIR, 'blog')
 INDEX_PATH = os.path.join(BASE_DIR, 'index.html')
 BLOG_INDEX_PATH = os.path.join(BLOG_DIR, 'index.html')
+POSTS_PER_PAGE = 6
+
+CATEGORIES = {
+    'all': {'name': '全部', 'slug': 'all'},
+    'reviews': {'name': '深度评测', 'slug': 'reviews'},
+    'tutorials': {'name': '实操教程', 'slug': 'tutorials'},
+    'news': {'name': '行业资讯', 'slug': 'news'},
+}
+
+def assign_category(meta):
+    """Determine category based on keywords and title"""
+    text = (meta['title'] + " " + " ".join(meta['keywords'])).lower()
+    
+    if any(k in text for k in ['vs', 'comparison', '评测', '对比', '体验', '区别', '深度', '报告', '测试']):
+        return 'reviews'
+    if any(k in text for k in ['教程', '指南', '攻略', '怎么', '开通', '注册', '充值', '购买', '订阅', '方法', '步骤', '如何']):
+        return 'tutorials'
+    if any(k in text for k in ['资讯', '更新', '发布', '限制', '额度', '价格', '方案', '优惠', '降价', '新闻', 'openai', 'google', 'gemini']):
+        return 'news'
+        
+    return 'reviews' # Default fallback to reviews or news if ambiguous, or add 'insights'
 
 # Varied Card Styles for Homepage/List Page
 CARD_STYLES = [
@@ -64,6 +85,7 @@ def clean_url(url):
     Phase 1: Link Governance
     1. Remove .html suffix
     2. Enforce root path (start with /)
+    3. Handle index.html -> /
     """
     if not url: return url
     if url.startswith(('http:', 'https:', 'mailto:', 'tel:', 'data:', '#')):
@@ -80,19 +102,25 @@ def clean_url(url):
     if url.endswith('.html'):
         url = url[:-5]
     
-    # Remove index
+    # Handle index variants
     if url.endswith('/index'):
         url = url[:-6]
     if url == 'index':
         url = ''
+    if url.endswith('index.html'):
+        url = url.replace('index.html', '')
         
     # Enforce root path
     if not url.startswith('/'):
         url = '/' + url
         
+    # Ensure trailing slash for directory-like paths if desired, 
+    # but for now let's just ensure no .html
+    # If it ends with /, keep it.
+    
     if url == '/': return '/' + anchor
     
-    return url + anchor
+    return url.rstrip('/') + anchor
 
 def slugify(text):
     """Create URL-friendly slug from text"""
@@ -119,9 +147,31 @@ def is_safe_zone(tag):
 def fix_links(soup):
     """
     Apply Clean URL logic to all links, skipping safe zones.
+    Also adds rel="noopener" to external links.
     """
+    # Fix Sidebar Promo Card Link (Special Case for ../go/gpt-topup)
+    # The promo card in blog posts often uses a relative link that might escape standard logic
+    for a in soup.find_all('a', href=True):
+        if a['href'] == '../go/gpt-topup':
+            a['href'] = '/go/gpt-topup'
+
     for a in soup.find_all('a', href=True):
         if is_safe_zone(a): continue
+        
+        href = a['href']
+        # External Link Security/SEO
+        if href.startswith(('http:', 'https:')):
+            if 'gpt-upgrade.top' not in href and 'localhost' not in href:
+                # Preserve existing rel if any, else add
+                rel = a.get('rel', [])
+                if isinstance(rel, str): rel = rel.split()
+                if 'noopener' not in rel: rel.append('noopener')
+                # Optional: Add nofollow for untrusted
+                # if 'nofollow' not in rel: rel.append('nofollow') 
+                a['rel'] = rel
+                a['target'] = '_blank'
+            continue
+            
         a['href'] = clean_url(a['href'])
         
     # Also fix local images to be absolute paths
@@ -130,6 +180,7 @@ def fix_links(soup):
         src = img['src']
         if not src.startswith(('http', 'data:')):
              if not src.startswith('/'):
+                 # Ensure absolute path
                  img['src'] = '/' + src.lstrip('./')
 
 def extract_layout():
@@ -459,47 +510,16 @@ def inject_breadcrumbs(soup, meta):
     '''
     main.insert(0, BeautifulSoup(breadcrumb_html, 'html.parser'))
 
-def inject_tags(soup, meta):
-    """Phase 3.5: Tag Cloud Injection"""
-    article = soup.find('article')
-    if not article: return
-    
-    # Remove existing tags container
-    for div in article.find_all('div', class_='tags-container'):
-        div.decompose()
-        
-    if not meta['keywords']: return
-    
-    tags_html = ""
-    for tag in meta['keywords']:
-        if not tag.strip(): continue
-        tag_slug = slugify(tag.strip())
-        tag_url = f"/blog/tag/{tag_slug}"
-        tags_html += f'''
-        <a href="{tag_url}" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-400 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-900/20 transition-all duration-300">
-            #{tag}
-        </a>
-        '''
-        
-    container_html = f'''
-    <div class="flex flex-wrap gap-2 mt-8 mb-8 pt-8 border-t border-white/5 tags-container">
-        {tags_html}
-    </div>
-    '''
-    
-    # Insert before related posts or at end of article
-    related = article.find('div', class_='related-posts-container')
-    if related:
-        related.insert_before(BeautifulSoup(container_html, 'html.parser'))
-    else:
-        article.append(BeautifulSoup(container_html, 'html.parser'))
-
 def inject_related_posts(soup, current_meta, all_articles):
     """Phase 3: Smart Interlinking"""
     article = soup.find('article')
     if not article: return
     
-    # Remove existing
+    # Remove existing tags container if any (cleanup)
+    for div in article.find_all('div', class_='tags-container'):
+        div.decompose()
+    
+    # Remove existing related posts
     for div in article.find_all('div', class_='related-posts-container'):
         div.decompose()
         
@@ -612,114 +632,167 @@ def update_homepage(articles):
     inject_favicons(soup)
     with open(INDEX_PATH, 'w', encoding='utf-8') as f: f.write(str(soup))
 
-def generate_tag_pages(tags_map, layout_nav, layout_footer):
-    """Generate static pages for each tag"""
-    tag_dir = os.path.join(BLOG_DIR, 'tag')
-    if os.path.exists(tag_dir):
-        import shutil
-        shutil.rmtree(tag_dir)
-    os.makedirs(tag_dir)
-    
+def update_blog_index(articles, layout_nav, layout_footer):
+    """Rebuild /blog/ index with Categorization and Pagination"""
     if not os.path.exists(BLOG_INDEX_PATH): return
+    
+    # 1. Prepare Template
     with open(BLOG_INDEX_PATH, 'r', encoding='utf-8') as f:
         template_html = f.read()
         
-    for tag, articles in tags_map.items():
-        if not tag.strip(): continue
-        tag_slug = slugify(tag.strip())
-        soup = BeautifulSoup(template_html, 'html.parser')
+    # 2. Group Articles
+    grouped = {k: [] for k in CATEGORIES.keys()}
+    grouped['all'] = articles
+    
+    for post in articles:
+        cat_slug = assign_category(post)
+        if cat_slug in grouped:
+            grouped[cat_slug].append(post)
+            
+    # 3. Clean Output Directories
+    # Ensure /blog/page/ exists
+    page_dir = os.path.join(BLOG_DIR, 'page')
+    if not os.path.exists(page_dir): os.makedirs(page_dir)
+    
+    # Ensure /blog/category/ exists
+    cat_base_dir = os.path.join(BLOG_DIR, 'category')
+    if not os.path.exists(cat_base_dir): os.makedirs(cat_base_dir)
+    
+    # 4. Generate Pages
+    for cat_slug, cat_articles in grouped.items():
+        # Create category-specific subdirs if needed
+        if cat_slug != 'all':
+            cat_dir = os.path.join(cat_base_dir, cat_slug)
+            if not os.path.exists(cat_dir): os.makedirs(cat_dir)
+            
+        total_posts = len(cat_articles)
+        total_pages = (total_posts + POSTS_PER_PAGE - 1) // POSTS_PER_PAGE
+        if total_pages == 0: total_pages = 1
         
-        # 1. Update Meta
-        title = f"标签: {tag} - GPT-Upgrade"
-        if soup.title: soup.title.string = title
-        
-        # 2. Update Hero Title
-        main = soup.find('main')
-        if main:
-            h1 = main.find('h1')
-            if h1:
-                h1.clear()
-                h1.append(f"Tag: {tag}")
-        
-        # 3. Clear and Fill Grid
-        grid = soup.find('div', class_=re.compile(r'grid.*cols'))
-        if grid:
-            grid.clear()
-            for i, post in enumerate(articles):
-                card_html = create_card_html(post, i)
-                grid.append(BeautifulSoup(card_html, 'html.parser'))
+        for page in range(1, total_pages + 1):
+            soup = BeautifulSoup(template_html, 'html.parser')
+            
+            # --- A. Determine Output Path & URL ---
+            if cat_slug == 'all':
+                if page == 1:
+                    output_path = BLOG_INDEX_PATH
+                    current_url = "/blog/"
+                else:
+                    output_path = os.path.join(page_dir, f"{page}.html")
+                    current_url = f"/blog/page/{page}"
+            else:
+                if page == 1:
+                    output_path = os.path.join(cat_base_dir, f"{cat_slug}.html")
+                    current_url = f"/blog/category/{cat_slug}"
+                else:
+                    output_path = os.path.join(cat_base_dir, cat_slug, f"{page}.html")
+                    current_url = f"/blog/category/{cat_slug}/{page}"
+
+            # --- B. Update Layout (Nav/Footer) ---
+            if soup.body:
+                old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
+                if old_nav: old_nav.decompose()
                 
-        # 4. Layout Sync
-        if soup.body:
-            old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
-            if old_nav: old_nav.decompose()
+                current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+                blog_link = current_nav.find('a', href=re.compile(r'#blog'))
+                if blog_link: blog_link['href'] = '/blog/'
+                soup.body.insert(0, current_nav)
+                
+                old_footer = soup.find('footer')
+                if old_footer: old_footer.decompose()
+                soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
+
+            # --- C. Inject Category Filter ---
+            main = soup.find('main')
+            if main:
+                # Find the title/intro section to insert after
+                intro = main.find('div', class_='text-center')
+                
+                # Filter HTML
+                filter_html = '<div class="flex flex-wrap justify-center gap-4 mb-12">'
+                for c_slug, c_info in CATEGORIES.items():
+                    is_active = (c_slug == cat_slug)
+                    
+                    # URL calculation
+                    if c_slug == 'all': url = '/blog/'
+                    else: url = f'/blog/category/{c_slug}'
+                    
+                    if is_active:
+                        classes = "px-5 py-2 rounded-full bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-500/25"
+                    else:
+                        classes = "px-5 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 font-medium text-sm hover:bg-white/10 hover:text-white transition-all"
+                        
+                    filter_html += f'<a href="{url}" class="{classes}">{c_info["name"]}</a>'
+                filter_html += '</div>'
+                
+                if intro:
+                    intro.insert_after(BeautifulSoup(filter_html, 'html.parser'))
+
+                # --- D. Update Grid ---
+                grid = main.find('div', class_=re.compile(r'grid.*cols'))
+                if grid:
+                    grid.clear()
+                    start_idx = (page - 1) * POSTS_PER_PAGE
+                    end_idx = start_idx + POSTS_PER_PAGE
+                    page_posts = cat_articles[start_idx:end_idx]
+                    
+                    for i, post in enumerate(page_posts):
+                        # Use global index for style variation
+                        card_html = create_card_html(post, start_idx + i)
+                        grid.append(BeautifulSoup(card_html, 'html.parser'))
+                        
+                # --- E. Inject Pagination ---
+                if total_pages > 1:
+                    pagination_html = '<div class="flex justify-center items-center gap-4 mt-16">'
+                    
+                    # Prev
+                    if page > 1:
+                        if cat_slug == 'all':
+                            prev_url = "/blog/" if page == 2 else f"/blog/page/{page-1}"
+                        else:
+                            prev_url = f"/blog/category/{cat_slug}" if page == 2 else f"/blog/category/{cat_slug}/{page-1}"
+                        pagination_html += f'<a href="{prev_url}" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">上一页</a>'
+                    
+                    # Page Numbers
+                    pagination_html += f'<span class="text-gray-500 text-sm">第 {page} / {total_pages} 页</span>'
+                    
+                    # Next
+                    if page < total_pages:
+                        if cat_slug == 'all':
+                            next_url = f"/blog/page/{page+1}"
+                        else:
+                            next_url = f"/blog/category/{cat_slug}/{page+1}"
+                        pagination_html += f'<a href="{next_url}" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">下一页</a>'
+                        
+                    pagination_html += '</div>'
+                    main.append(BeautifulSoup(pagination_html, 'html.parser'))
+
+            # --- F. Update Title/Meta ---
+            if page > 1 or cat_slug != 'all':
+                suffix = ""
+                if cat_slug != 'all': suffix += f" - {CATEGORIES[cat_slug]['name']}"
+                if page > 1: suffix += f" (第 {page} 页)"
+                
+                if soup.title:
+                    soup.title.string = f"AI 前沿情报局{suffix} | GPT-Upgrade"
+                    
+            # Update Schema for CollectionPage
+            for script in soup.find_all('script', type='application/ld+json'): script.decompose()
+            schema_items = []
+            for i, post in enumerate(page_posts):
+                schema_items.append({"@type": "ListItem", "position": i + 1, "url": f"https://gpt-upgrade.top{post['url']}"})
+            schema_data = {"@context": "https://schema.org", "@type": "CollectionPage", "headline": f"GPT-Upgrade 情报局 {cat_slug}", "description": "最新的 AI 行业资讯、ChatGPT 使用教程与评测。", "mainEntity": {"@type": "ItemList", "itemListElement": schema_items}}
+            schema_script = soup.new_tag('script', type='application/ld+json')
+            schema_script.string = json.dumps(schema_data, indent=2, ensure_ascii=False)
+            if soup.head: soup.head.append(schema_script)
+
+            # --- G. Final Polish ---
+            fix_links(soup)
+            inject_favicons(soup)
+            reorder_head(soup)
             
-            # Modify Nav for Blog Context
-            current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
-            blog_link = current_nav.find('a', href=re.compile(r'#blog'))
-            if blog_link: blog_link['href'] = '/blog/'
-            
-            soup.body.insert(0, current_nav)
-            
-            old_footer = soup.find('footer')
-            if old_footer: old_footer.decompose()
-            soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
-            
-        # 5. Fix Links & Favicons
-        fix_links(soup)
-        inject_favicons(soup)
-        reorder_head(soup)
-        
-        # 6. Save
-        output_path = os.path.join(tag_dir, f"{tag_slug}.html")
-        with open(output_path, 'w', encoding='utf-8') as f: f.write(soup.prettify())
-
-def update_blog_index(articles, layout_nav, layout_footer):
-    """Rebuild /blog/index.html"""
-    if not os.path.exists(BLOG_INDEX_PATH): return
-    with open(BLOG_INDEX_PATH, 'r', encoding='utf-8') as f:
-        soup = BeautifulSoup(f.read(), 'html.parser')
-
-    # Layout Sync
-    if soup.body:
-        old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
-        if old_nav: old_nav.decompose()
-        
-        # Modify Nav for Blog Context
-        current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
-        blog_link = current_nav.find('a', href=re.compile(r'#blog'))
-        if blog_link: blog_link['href'] = '/blog/'
-        
-        soup.body.insert(0, current_nav)
-        
-        old_footer = soup.find('footer')
-        if old_footer: old_footer.decompose()
-        soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
-
-    # Update List
-    main = soup.find('main')
-    if main:
-        grid = main.find('div', class_=re.compile(r'grid.*cols'))
-        if grid:
-            grid.clear()
-            for i, post in enumerate(articles):
-                card_html = create_card_html(post, i)
-                grid.append(BeautifulSoup(card_html, 'html.parser'))
-
-    # Update Schema
-    for script in soup.find_all('script', type='application/ld+json'): script.decompose()
-    schema_items = []
-    for i, post in enumerate(articles):
-        schema_items.append({"@type": "ListItem", "position": i + 1, "url": f"https://gpt-upgrade.top{post['url']}"})
-    schema_data = {"@context": "https://schema.org", "@type": "CollectionPage", "headline": "GPT-Upgrade 情报局", "description": "最新的 AI 行业资讯、ChatGPT 使用教程与评测。", "mainEntity": {"@type": "ItemList", "itemListElement": schema_items}}
-    schema_script = soup.new_tag('script', type='application/ld+json')
-    schema_script.string = json.dumps(schema_data, indent=2, ensure_ascii=False)
-    if soup.head: soup.head.append(schema_script)
-
-    fix_links(soup)
-    inject_favicons(soup)
-    reorder_head(soup)
-    with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f: f.write(soup.prettify())
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(soup.prettify())
 
 def sync_static_pages(layout_nav, layout_footer):
     """
@@ -763,6 +836,8 @@ def sync_static_pages(layout_nav, layout_footer):
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(soup.prettify())
 
+
+
 def main():
     print("Starting build process...")
     
@@ -787,15 +862,7 @@ def main():
     all_articles.sort(key=lambda x: x['date'], reverse=True)
     
     # 2. Process Blog Posts
-    tags_map = {}
     for meta in all_articles:
-        # Collect Tags
-        for tag in meta['keywords']:
-            tag = tag.strip()
-            if not tag: continue
-            if tag not in tags_map: tags_map[tag] = []
-            tags_map[tag].append(meta)
-            
         filepath = os.path.join(BLOG_DIR, meta['filename'])
         print(f"Processing {meta['filename']}...")
         
@@ -835,9 +902,11 @@ def main():
         inject_breadcrumbs(soup, meta)
         
         # Smart Interlinking
-        inject_tags(soup, meta)
         inject_related_posts(soup, meta, all_articles)
         
+        # *** CONVERT TO RELATIVE PATHS FOR LOCAL PREVIEW ***
+        # make_paths_relative(soup)
+
         # Save
         with open(filepath, 'w', encoding='utf-8') as f:
             f.write(str(soup))
@@ -849,10 +918,6 @@ def main():
     # 4. Rebuild Blog Index
     print("Updating Blog Index...")
     update_blog_index(all_articles, layout_nav, layout_footer)
-    
-    # 4.5 Generate Tag Pages
-    print("Generating Tag Pages...")
-    generate_tag_pages(tags_map, layout_nav, layout_footer)
     
     # 5. Sync Static Pages
     print("Syncing Static Pages...")
