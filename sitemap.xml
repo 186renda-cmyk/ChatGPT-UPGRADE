@@ -55,24 +55,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://gpt-upgrade.top/blog/category/reviews</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://gpt-upgrade.top/blog/category/tutorials</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://gpt-upgrade.top/blog/category/news</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://gpt-upgrade.top/privacy</loc>
     <lastmod>2026-01-21</lastmod>
     <changefreq>monthly</changefreq>

@@ -649,199 +649,204 @@ def update_homepage(articles):
     with open(INDEX_PATH, 'w', encoding='utf-8') as f: f.write(str(soup))
 
 def update_blog_index(articles, layout_nav, layout_footer):
-    """Rebuild /blog/ index with Categorization and Pagination"""
+    """Rebuild /blog/ index with Client-Side Filtering & Pagination"""
     if not os.path.exists(BLOG_INDEX_PATH): return
     
     # 1. Prepare Template
     with open(BLOG_INDEX_PATH, 'r', encoding='utf-8') as f:
         template_html = f.read()
         
-    # 2. Group Articles
-    grouped = {k: [] for k in CATEGORIES.keys()}
-    grouped['all'] = articles
-    
-    for post in articles:
-        cat_slug = assign_category(post)
-        if cat_slug in grouped:
-            grouped[cat_slug].append(post)
-            
-    # 3. Clean Output Directories
-    # Ensure /blog/page/ exists
-    page_dir = os.path.join(BLOG_DIR, 'page')
-    if not os.path.exists(page_dir): os.makedirs(page_dir)
-    
-    # Ensure /blog/category/ exists
-    cat_base_dir = os.path.join(BLOG_DIR, 'category')
-    if not os.path.exists(cat_base_dir): os.makedirs(cat_base_dir)
-    
-    # 4. Generate Pages
-    for cat_slug, cat_articles in grouped.items():
-        # Create category-specific subdirs if needed
-        if cat_slug != 'all':
-            cat_dir = os.path.join(cat_base_dir, cat_slug)
-            if not os.path.exists(cat_dir): os.makedirs(cat_dir)
-            
-        total_posts = len(cat_articles)
-        total_pages = (total_posts + POSTS_PER_PAGE - 1) // POSTS_PER_PAGE
-        if total_pages == 0: total_pages = 1
+    soup = BeautifulSoup(template_html, 'html.parser')
+
+    # --- CLEANUP: Remove existing generated elements ---
+    # 1. Remove Category Filters
+    target_filter_classes = {"flex", "flex-wrap", "justify-center", "gap-4", "mb-12"}
+    for div in soup.find_all('div'):
+        classes = div.get('class', [])
+        if target_filter_classes.issubset(set(classes)):
+             # Check content loose match
+             text = div.get_text()
+             if "全部" in text and "深度评测" in text:
+                div.decompose()
+
+    # 2. Remove Pagination (Static)
+    target_pagination_classes = {"flex", "justify-center", "items-center", "gap-4", "mt-16"}
+    for div in soup.find_all('div'):
+        classes = div.get('class', [])
+        if target_pagination_classes.issubset(set(classes)):
+             if "页" in div.get_text() or "Page" in div.get_text():
+                div.decompose()
+
+    # 3. Remove Old Scripts
+    for script in soup.find_all('script'):
+        if script.string and 'const pageSize' in script.string:
+            script.decompose()
+
+    # --- A. Update Layout ---
+    if soup.body:
+        old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
+        if old_nav: old_nav.decompose()
         
-        for page in range(1, total_pages + 1):
-            soup = BeautifulSoup(template_html, 'html.parser')
+        current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+        blog_link = current_nav.find('a', href=re.compile(r'^(?:/|#)blog/?$'))
+        if blog_link: blog_link['href'] = '/blog/'
+        soup.body.insert(0, current_nav)
+        
+        old_footer = soup.find('footer')
+        if old_footer: old_footer.decompose()
+        soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
+
+    main = soup.find('main')
+    if main:
+        # --- B. Inject Client-Side Category Buttons ---
+        intro = main.find('div', class_='text-center')
+        
+        # Use <button> instead of <a> for client-side action
+        filter_html = '<div class="flex flex-wrap justify-center gap-4 mb-12">'
+        for c_slug, c_info in CATEGORIES.items():
+            # Default style (will be updated by JS)
+            classes = "px-5 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 font-medium text-sm hover:bg-white/10 hover:text-white transition-all"
+            filter_html += f'<button data-cat="{c_slug}" class="{classes}">{c_info["name"]}</button>'
+        filter_html += '</div>'
+        
+        if intro:
+            intro.insert_after(BeautifulSoup(filter_html, 'html.parser'))
+
+        # --- C. Inject All Articles ---
+        grid = main.find('div', class_=re.compile(r'grid.*cols'))
+        if grid:
+            grid.clear()
+            for i, post in enumerate(articles):
+                cat_slug = assign_category(post)
+                # Create card
+                card_soup = BeautifulSoup(create_card_html(post, i), 'html.parser')
+                article_tag = card_soup.find('article')
+                if article_tag:
+                    article_tag['data-category'] = cat_slug
+                    # Default hidden (JS will reveal)
+                    article_tag['class'] = article_tag.get('class', []) + ['hidden']
+                grid.append(article_tag)
+
+    # --- D. Inject Client-Side Logic ---
+    js_logic = """
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pageSize = 6;
+            const grid = document.querySelector('div[class*="grid-cols"]');
+            if (!grid) return;
             
-            # --- CLEANUP: Remove existing generated elements to prevent duplication ---
-            # 1. Remove Category Filters
-            # Use stricter class checking to ensure we catch them
-            target_filter_classes = {"flex", "flex-wrap", "justify-center", "gap-4", "mb-12"}
-            for div in soup.find_all('div'):
-                classes = div.get('class', [])
-                if target_filter_classes.issubset(set(classes)):
-                     # Check if it contains links to categories
-                     if div.find('a', string='全部') or div.find('a', string='深度评测'):
-                        div.decompose()
-
-            # 2. Remove Pagination
-            target_pagination_classes = {"flex", "justify-center", "items-center", "gap-4", "mt-16"}
-            for div in soup.find_all('div'):
-                classes = div.get('class', [])
-                if target_pagination_classes.issubset(set(classes)):
-                     # Double check content
-                     if "页" in div.get_text():
-                        div.decompose()
-
-            # --- A. Determine Output Path & URL ---
-            if cat_slug == 'all':
-                if page == 1:
-                    output_path = BLOG_INDEX_PATH
-                    current_url = "/blog/"
-                else:
-                    output_path = os.path.join(page_dir, f"{page}.html")
-                    current_url = f"/blog/page/{page}"
-            else:
-                if page == 1:
-                    output_path = os.path.join(cat_base_dir, f"{cat_slug}.html")
-                    current_url = f"/blog/category/{cat_slug}"
-                else:
-                    output_path = os.path.join(cat_base_dir, cat_slug, f"{page}.html")
-                    current_url = f"/blog/category/{cat_slug}/{page}"
-
-            # --- B. Update Layout (Nav/Footer) ---
-            if soup.body:
-                old_nav = soup.body.find('nav', id='navbar') or soup.body.find('nav')
-                if old_nav: old_nav.decompose()
-                
-                current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
-                blog_link = current_nav.find('a', href=re.compile(r'#blog'))
-                if blog_link: blog_link['href'] = '/blog/'
-                soup.body.insert(0, current_nav)
-                
-                old_footer = soup.find('footer')
-                if old_footer: old_footer.decompose()
-                soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
-
-            # --- C. Inject Category Filter ---
-            main = soup.find('main')
-            if main:
-                # Find the title/intro section to insert after
-                intro = main.find('div', class_='text-center')
-                
-                # Filter HTML
-                filter_html = '<div class="flex flex-wrap justify-center gap-4 mb-12">'
-                for c_slug, c_info in CATEGORIES.items():
-                    is_active = (c_slug == cat_slug)
-                    
-                    # URL calculation
-                    if c_slug == 'all': url = '/blog/'
-                    else: url = f'/blog/category/{c_slug}'
-                    
-                    if is_active:
-                        classes = "px-5 py-2 rounded-full bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-500/25"
-                    else:
-                        classes = "px-5 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 font-medium text-sm hover:bg-white/10 hover:text-white transition-all"
-                        
-                    filter_html += f'<a href="{url}" class="{classes}">{c_info["name"]}</a>'
-                filter_html += '</div>'
-                
-                if intro:
-                    intro.insert_after(BeautifulSoup(filter_html, 'html.parser'))
-
-                # --- D. Update Grid ---
-                grid = main.find('div', class_=re.compile(r'grid.*cols'))
-                if grid:
-                    grid.clear()
-                    start_idx = (page - 1) * POSTS_PER_PAGE
-                    end_idx = start_idx + POSTS_PER_PAGE
-                    page_posts = cat_articles[start_idx:end_idx]
-                    
-                    for i, post in enumerate(page_posts):
-                        # Use global index for style variation
-                        card_html = create_card_html(post, start_idx + i)
-                        grid.append(BeautifulSoup(card_html, 'html.parser'))
-                        
-                # --- E. Inject Pagination ---
-                if total_pages > 1:
-                    pagination_html = '<div class="flex justify-center items-center gap-4 mt-16">'
-                    
-                    # Prev
-                    if page > 1:
-                        if cat_slug == 'all':
-                            prev_url = "/blog/" if page == 2 else f"/blog/page/{page-1}"
-                        else:
-                            prev_url = f"/blog/category/{cat_slug}" if page == 2 else f"/blog/category/{cat_slug}/{page-1}"
-                        pagination_html += f'<a href="{prev_url}" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">上一页</a>'
-                    
-                    # Page Numbers
-                    pagination_html += f'<span class="text-gray-500 text-sm">第 {page} / {total_pages} 页</span>'
-                    
-                    # Next
-                    if page < total_pages:
-                        if cat_slug == 'all':
-                            next_url = f"/blog/page/{page+1}"
-                        else:
-                            next_url = f"/blog/category/{cat_slug}/{page+1}"
-                        pagination_html += f'<a href="{next_url}" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition">下一页</a>'
-                        
-                    pagination_html += '</div>'
-                    main.append(BeautifulSoup(pagination_html, 'html.parser'))
-
-            # --- F. Update Title/Meta ---
-            if page > 1 or cat_slug != 'all':
-                suffix = ""
-                if cat_slug != 'all': suffix += f" - {CATEGORIES[cat_slug]['name']}"
-                if page > 1: suffix += f" (第 {page} 页)"
-                
-                if soup.title:
-                    soup.title.string = f"AI 前沿情报局{suffix} | GPT-Upgrade"
-                    
-            # Update Schema for CollectionPage
-            for script in soup.find_all('script', type='application/ld+json'): script.decompose()
-            schema_items = []
-            for i, post in enumerate(page_posts):
-                schema_items.append({"@type": "ListItem", "position": i + 1, "url": f"https://gpt-upgrade.top{post['url']}"})
+            const cards = Array.from(grid.querySelectorAll('article'));
+            const filterButtons = Array.from(document.querySelectorAll('button[data-cat]'));
             
-            cat_name = CATEGORIES[cat_slug]['name']
-            headline_suffix = "" if cat_slug == 'all' else f" - {cat_name}"
-            
-            schema_data = {
-                "@context": "https://schema.org", 
-                "@type": "CollectionPage", 
-                "headline": f"GPT-Upgrade 情报局{headline_suffix}", 
-                "description": "最新的 AI 行业资讯、ChatGPT 使用教程与评测。", 
-                "mainEntity": {
-                    "@type": "ItemList", 
-                    "itemListElement": schema_items
-                }
+            // Create Pager UI
+            const pager = document.createElement('div');
+            pager.id = 'pager';
+            pager.className = 'flex justify-center items-center gap-4 mt-16';
+            pager.innerHTML = `
+                <button id="prevPage" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed">上一页</button>
+                <span id="pageInfo" class="text-gray-500 text-sm">第 1 页</span>
+                <button id="nextPage" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition disabled:opacity-50 disabled:cursor-not-allowed">下一页</button>
+            `;
+            grid.parentNode.appendChild(pager);
+
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            const pageInfo = document.getElementById('pageInfo');
+
+            let currentCat = new URLSearchParams(location.search).get('cat') || 'all';
+            let currentPage = parseInt(new URLSearchParams(location.search).get('page') || '1', 10);
+
+            function getFiltered() {
+                if (currentCat === 'all') return cards;
+                return cards.filter(c => c.getAttribute('data-category') === currentCat);
             }
-            schema_script = soup.new_tag('script', type='application/ld+json')
-            schema_script.string = json.dumps(schema_data, indent=2, ensure_ascii=False)
-            if soup.head: soup.head.append(schema_script)
 
-            # --- G. Final Polish ---
-            fix_links(soup)
-            inject_favicons(soup)
-            reorder_head(soup)
-            
-            with open(output_path, 'w', encoding='utf-8') as f:
-                f.write(soup.prettify())
+            function render() {
+                const filtered = getFiltered();
+                const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+                
+                // Ensure page validity
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+
+                // Hide all first
+                cards.forEach(c => c.classList.add('hidden'));
+
+                // Show current slice
+                const start = (currentPage - 1) * pageSize;
+                const end = start + pageSize;
+                const toShow = filtered.slice(start, end);
+                toShow.forEach(c => c.classList.remove('hidden'));
+
+                // Update UI
+                pageInfo.textContent = `第 ${currentPage} / ${totalPages} 页`;
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+
+                // Update Buttons State
+                filterButtons.forEach(b => {
+                    const isActive = b.getAttribute('data-cat') === currentCat;
+                    if (isActive) {
+                        b.className = "px-5 py-2 rounded-full bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-500/25 transition-all";
+                    } else {
+                        b.className = "px-5 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 font-medium text-sm hover:bg-white/10 hover:text-white transition-all";
+                    }
+                });
+            }
+
+            // Event Listeners
+            filterButtons.forEach(b => {
+                b.addEventListener('click', () => {
+                    currentCat = b.getAttribute('data-cat');
+                    currentPage = 1;
+                    render();
+                    updateUrl();
+                });
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    render();
+                    updateUrl();
+                    grid.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const filtered = getFiltered();
+                const totalPages = Math.ceil(filtered.length / pageSize);
+                const maxPage = Math.max(1, totalPages);
+                if (currentPage < maxPage) {
+                    currentPage++;
+                    render();
+                    updateUrl();
+                    grid.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+
+            function updateUrl() {
+                const params = new URLSearchParams();
+                if (currentCat !== 'all') params.set('cat', currentCat);
+                if (currentPage > 1) params.set('page', currentPage);
+                const newUrl = location.pathname + (params.toString() ? '?' + params.toString() : '');
+                history.replaceState(null, '', newUrl);
+            }
+
+            // Initial Render
+            render();
+        });
+    </script>
+    """
+    soup.body.append(BeautifulSoup(js_logic, 'html.parser'))
+
+    # --- E. Final Polish ---
+    fix_links(soup)
+    inject_favicons(soup)
+    reorder_head(soup)
+    
+    with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f:
+        f.write(soup.prettify())
 
 def sync_static_pages(layout_nav, layout_footer):
     """

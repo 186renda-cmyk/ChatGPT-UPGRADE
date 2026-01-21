@@ -77,7 +77,18 @@ def get_all_html_files():
     files = [f for f in glob.glob('**/*.html', recursive=True)]
     # Files to exclude from audit
     ignored_files = {'404.html', 'googlea685aa8ff3686b48.html'}
-    return [f for f in files if os.path.basename(f) not in ignored_files]
+    
+    # Filter files
+    filtered_files = []
+    for f in files:
+        # Exclude go/ directory (redirect artifacts)
+        if f.startswith('go/') or '/go/' in f:
+            continue
+        if os.path.basename(f) in ignored_files:
+            continue
+        filtered_files.append(f)
+        
+    return filtered_files
 
 def resolve_url_to_file(url, current_file_path, base_url):
     """
