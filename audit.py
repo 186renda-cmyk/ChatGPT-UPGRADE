@@ -48,6 +48,28 @@ def load_config():
 
     return base_url, keywords
 
+def load_redirects():
+    """
+    Parse _redirects file to get a map of internal path -> external URL
+    """
+    redirects = {}
+    if not os.path.exists('_redirects'):
+        return redirects
+    
+    with open('_redirects', 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            parts = line.split()
+            if len(parts) >= 2:
+                source = parts[0]
+                target = parts[1]
+                # We only care if target is external
+                if target.startswith('http://') or target.startswith('https://'):
+                    redirects[source] = target
+    return redirects
+
 def get_all_html_files():
     """
     recursively find all html files, excluding specific system/verification files
@@ -159,12 +181,16 @@ def check_link_health(urls):
 
 def main():
     base_url, keywords = load_config()
+    redirect_map = load_redirects()
     print(f"正在审计站点: {Fore.CYAN}{base_url} {Style.RESET_ALL}| 核心词: {Fore.GREEN}{keywords}")
+    print(f"加载重定向规则: {len(redirect_map)} 条外部跳转规则")
 
     html_files = get_all_html_files()
     
     # Statistics
     inbound_counts = {f: 0 for f in html_files}
+    outbound_ext_counts = {f: 0 for f in html_files}
+    redirect_sources = defaultdict(list)
     all_external_links = set()
     all_internal_links = set() # Store (source_file, url, line_no, type)
     
@@ -217,6 +243,7 @@ def main():
                     # External link
                     all_external_links.add((file_path, href, str(link)))
                     unique_urls_to_check.add(href)
+                    outbound_ext_counts[file_path] += 1
                     continue
 
                 # If internal, proceed with Clean URL checks and Inbound counting
@@ -235,6 +262,18 @@ def main():
                              # score_deductions['clean_url'] += 1
                              pass
                     
+                    # Check if this internal link is actually an external redirect
+                    if normalized_href in redirect_map:
+                        target_url = redirect_map[normalized_href]
+                        print(f"{Fore.CYAN}[Redirect] {normalized_href} -> {target_url} [From: {file_path}]")
+                        redirect_sources[normalized_href].append(file_path)
+                        all_external_links.add((file_path, target_url, str(link) + f" (via {normalized_href})"))
+                        unique_urls_to_check.add(target_url)
+                        outbound_ext_counts[file_path] += 1
+                        # Continue to not count as inbound?
+                        # It is effectively an external link.
+                        continue
+
                     # Resolve to file for Inbound Counting
                     target_file = resolve_url_to_file(normalized_href, file_path, base_url)
                     if target_file:
@@ -305,6 +344,12 @@ def main():
     sorted_pages = sorted(inbound_counts.items(), key=lambda x: x[1], reverse=True)
     print(f"{Fore.WHITE}Top 10 Pages by Inbound Links:")
     for page, count in sorted_pages[:10]:
+        print(f"  {count}: {page}")
+
+    # Top Pages by Outbound External Links
+    sorted_outbound = sorted(outbound_ext_counts.items(), key=lambda x: x[1], reverse=True)
+    print(f"\n{Fore.WHITE}Top 10 Pages by Outbound External Links (外链数量 - 权重流失风险):")
+    for page, count in sorted_outbound[:10]:
         print(f"  {count}: {page}")
         
     # Orphans

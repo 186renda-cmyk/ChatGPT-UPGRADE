@@ -144,16 +144,32 @@ def is_safe_zone(tag):
             return True
     return False
 
-def fix_links(soup):
+def fix_links(soup, replace_sales_links=False):
     """
     Apply Clean URL logic to all links, skipping safe zones.
     Also adds rel="noopener" to external links.
+    Optionally replaces sales redirects with homepage anchors for blog posts.
     """
     # Fix Sidebar Promo Card Link (Special Case for ../go/gpt-topup)
     # The promo card in blog posts often uses a relative link that might escape standard logic
     for a in soup.find_all('a', href=True):
         if a['href'] == '../go/gpt-topup':
             a['href'] = '/go/gpt-topup'
+
+    # Sales Link Replacement (Prevent Link Equity Loss)
+    if replace_sales_links:
+        sales_map = {
+            '/go/gpt-topup': '/#pricing-high',
+            '/go/gpt-shared': '/#pricing-low',
+            '/go/gpt-exclusive': '/#pricing',
+            # Handle potentially uncleaned relative paths
+            '../go/gpt-topup': '/#pricing-high',
+            '../go/gpt-shared': '/#pricing-low',
+            '../go/gpt-exclusive': '/#pricing'
+        }
+        for a in soup.find_all('a', href=True):
+            if a['href'] in sales_map:
+                a['href'] = sales_map[a['href']]
 
     for a in soup.find_all('a', href=True):
         if is_safe_zone(a): continue
@@ -672,6 +688,26 @@ def update_blog_index(articles, layout_nav, layout_footer):
         for page in range(1, total_pages + 1):
             soup = BeautifulSoup(template_html, 'html.parser')
             
+            # --- CLEANUP: Remove existing generated elements to prevent duplication ---
+            # 1. Remove Category Filters
+            # Use stricter class checking to ensure we catch them
+            target_filter_classes = {"flex", "flex-wrap", "justify-center", "gap-4", "mb-12"}
+            for div in soup.find_all('div'):
+                classes = div.get('class', [])
+                if target_filter_classes.issubset(set(classes)):
+                     # Check if it contains links to categories
+                     if div.find('a', string='全部') or div.find('a', string='深度评测'):
+                        div.decompose()
+
+            # 2. Remove Pagination
+            target_pagination_classes = {"flex", "justify-center", "items-center", "gap-4", "mt-16"}
+            for div in soup.find_all('div'):
+                classes = div.get('class', [])
+                if target_pagination_classes.issubset(set(classes)):
+                     # Double check content
+                     if "页" in div.get_text():
+                        div.decompose()
+
             # --- A. Determine Output Path & URL ---
             if cat_slug == 'all':
                 if page == 1:
@@ -930,7 +966,8 @@ def main():
             soup = BeautifulSoup(f.read(), 'html.parser')
             
         # Link Governance (Global)
-        fix_links(soup)
+        # Enable sales link replacement for blog posts to prevent weight loss
+        fix_links(soup, replace_sales_links=True)
         
         # Inject Favicons
         inject_favicons(soup)
@@ -946,8 +983,9 @@ def main():
             
             # 3. Modify Nav for Blog Context (Point "情报局" to /blog/)
             current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
-            # Find the link to #blog and change it to /blog/
-            blog_link = current_nav.find('a', href=re.compile(r'#blog'))
+            # Find the link to #blog, /blog, or /blog/ and ensure it points to /blog/
+            # Regex matches: #blog, /blog, /blog/
+            blog_link = current_nav.find('a', href=re.compile(r'^(?:/|#)blog/?$'))
             if blog_link:
                 blog_link['href'] = '/blog/'
             
