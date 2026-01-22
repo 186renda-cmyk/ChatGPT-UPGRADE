@@ -911,10 +911,10 @@ def update_sitemap(articles):
         xml_content.append('  </url>')
 
     # 1. Homepage
-    add_url('/', today, 'daily', '1.0')
+    add_url('/', today, 'weekly', '1.0')
     
     # 2. Blog Index
-    add_url('/blog/', today, 'daily', '0.9')
+    add_url('/blog/', today, 'weekly', '0.9')
     
     # 3. Blog Posts
     for post in articles:
