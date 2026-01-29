@@ -91,6 +91,28 @@ def clean_url(url):
     if url.startswith(('http:', 'https:', 'mailto:', 'tel:', 'data:', '#')):
         return url
     
+    # Resolve ../ (Parent Directory)
+    # /blog/..#pricing -> /#pricing
+    # /blog/../index.html -> /index.html
+    if '/..' in url:
+        # Split anchor
+        anchor_part = ''
+        if '#' in url:
+            parts = url.split('#', 1)
+            url = parts[0]
+            anchor_part = '#' + parts[1]
+            
+        # Normalize path
+        # Using os.path.normpath on a URL path usually works for /.. resolution
+        # But we need to be careful with trailing slashes
+        try:
+            # Add a dummy base to handle root correctly
+            normalized = os.path.normpath(url)
+            if normalized == '.': normalized = '/'
+            url = normalized + anchor_part
+        except:
+            pass # Fallback to original if fails
+    
     # Handle anchors
     anchor = ''
     if '#' in url:
@@ -114,11 +136,17 @@ def clean_url(url):
     if not url.startswith('/'):
         url = '/' + url
         
-    # Ensure trailing slash for directory-like paths if desired, 
-    # but for now let's just ensure no .html
-    # If it ends with /, keep it.
-    
     if url == '/': return '/' + anchor
+    
+    # Smart Blog Prefix: If file exists in BLOG_DIR, ensure /blog/ prefix
+    clean_name = url.lstrip('/')
+    # Check both exact match (if directory) and .html existence
+    if os.path.exists(os.path.join(BLOG_DIR, clean_name)) or \
+       os.path.exists(os.path.join(BLOG_DIR, clean_name + '.html')):
+        if not url.startswith('/blog/'):
+            url = '/blog/' + clean_name
+    
+    if url == '/blog' or url == '/blog/': return '/blog/' + anchor
     
     return url.rstrip('/') + anchor
 
@@ -183,7 +211,7 @@ def fix_links(soup, replace_sales_links=False):
                 if isinstance(rel, str): rel = rel.split()
                 if 'noopener' not in rel: rel.append('noopener')
                 # Optional: Add nofollow for untrusted
-                # if 'nofollow' not in rel: rel.append('nofollow') 
+                if 'nofollow' not in rel: rel.append('nofollow') 
                 a['rel'] = rel
                 a['target'] = '_blank'
             continue
@@ -504,14 +532,79 @@ def inject_seo(soup, meta):
     # Reorder Head for perfect layout
     reorder_head(soup)
 
+def make_root_paths_relative(soup):
+    """
+    Convert absolute paths to relative paths for root pages (index.html, privacy.html, etc).
+    /assets/... -> assets/...
+    /blog/...   -> blog/...
+    /           -> index.html
+    """
+    # 1. Handle Links (a, link)
+    for tag in soup.find_all(['a', 'link'], href=True):
+        href = tag['href']
+        if href.startswith('/'):
+            if href == '/' or href == '/index.html':
+                tag['href'] = 'index.html'
+            else:
+                tag['href'] = href.lstrip('/')
+                
+    # 2. Handle Images/Scripts (img, script)
+    for tag in soup.find_all(['img', 'script'], src=True):
+        src = tag['src']
+        if src.startswith('/'):
+            tag['src'] = src.lstrip('/')
+
+def make_blog_paths_relative(soup):
+    """
+    Convert absolute paths to relative paths for blog posts (depth=1).
+    /assets/... -> ../assets/...
+    /blog/...   -> ./...
+    /           -> ../index.html
+    """
+    # 1. Handle Links (a, link)
+    for tag in soup.find_all(['a', 'link'], href=True):
+        href = tag['href']
+        if href.startswith('/'):
+            if href == '/' or href == '/index.html':
+                tag['href'] = '../index.html'
+            elif href.startswith('/blog/'):
+                # /blog/foo.html -> foo.html
+                # /blog/ -> index.html
+                rel_path = href.replace('/blog/', '')
+                if rel_path == '' or rel_path == 'index.html':
+                    tag['href'] = 'index.html'
+                else:
+                    tag['href'] = rel_path
+            else:
+                # /assets/... -> ../assets/...
+                tag['href'] = '..' + href
+                
+    # 2. Handle Images/Scripts (img, script)
+    for tag in soup.find_all(['img', 'script'], src=True):
+        src = tag['src']
+        if src.startswith('/'):
+            if src.startswith('/blog/'):
+                tag['src'] = src.replace('/blog/', '')
+            else:
+                # /assets/... -> ../assets/...
+                tag['src'] = '../' + src.lstrip('/')
+
 def inject_breadcrumbs(soup, meta):
     """Phase 3: Visual Breadcrumbs"""
     main = soup.find('main')
     if not main: return
     
-    # Remove existing breadcrumbs
+    # Remove existing breadcrumbs (nav)
     for nav in main.find_all('nav', attrs={'aria-label': 'Breadcrumb'}):
         nav.decompose()
+        
+    # Remove existing breadcrumbs (legacy div)
+    # Target: <div class="flex items-center gap-2 text-sm text-gray-500 mb-8 font-mono">
+    # Also remove Chinese variants
+    for div in main.find_all('div', class_='font-mono'):
+        text = div.get_text()
+        if ('Home' in text and 'Blog' in text) or ('首页' in text and '博客' in text):
+            div.decompose()
         
     breadcrumb_html = f'''
     <nav aria-label="Breadcrumb" class="mb-8 overflow-x-auto whitespace-nowrap">
@@ -550,15 +643,15 @@ def inject_related_posts(soup, current_meta, all_articles):
         scores.append((overlap, other))
         
     scores.sort(key=lambda x: x[0], reverse=True)
-    related = [x[1] for x in scores[:2]]
+    related = [x[1] for x in scores[:4]]
     
     # Fallback to recent if no overlap
-    if len(related) < 2:
+    if len(related) < 4:
         for other in all_articles:
             if other['filename'] == current_meta['filename']: continue
             if other not in related:
                 related.append(other)
-                if len(related) >= 2: break
+                if len(related) >= 4: break
                 
     if not related: return
     
@@ -646,6 +739,9 @@ def update_homepage(articles):
         
     fix_links(soup)
     inject_favicons(soup)
+    
+    # make_root_paths_relative(soup)
+    
     with open(INDEX_PATH, 'w', encoding='utf-8') as f: f.write(str(soup))
 
 def update_blog_index(articles, layout_nav, layout_footer):
@@ -688,13 +784,18 @@ def update_blog_index(articles, layout_nav, layout_footer):
         if old_nav: old_nav.decompose()
         
         current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+        fix_subpage_nav(current_nav)
+        
         blog_link = current_nav.find('a', href=re.compile(r'^(?:/|#)blog/?$'))
         if blog_link: blog_link['href'] = '/blog/'
         soup.body.insert(0, current_nav)
         
         old_footer = soup.find('footer')
         if old_footer: old_footer.decompose()
-        soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
+        
+        current_footer = BeautifulSoup(str(layout_footer), 'html.parser')
+        fix_subpage_nav(current_footer)
+        soup.body.append(current_footer)
 
     main = soup.find('main')
     if main:
@@ -845,6 +946,9 @@ def update_blog_index(articles, layout_nav, layout_footer):
     inject_favicons(soup)
     reorder_head(soup)
     
+    # Make paths relative for local preview (consistent with blog posts)
+    # make_blog_paths_relative(soup)
+    
     with open(BLOG_INDEX_PATH, 'w', encoding='utf-8') as f:
         f.write(soup.prettify())
 
@@ -876,12 +980,18 @@ def sync_static_pages(layout_nav, layout_footer):
             # Replace Nav
             old_nav = soup.body.find('nav')
             if old_nav: old_nav.decompose()
-            soup.body.insert(0, BeautifulSoup(str(layout_nav), 'html.parser'))
+            
+            current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+            fix_subpage_nav(current_nav)
+            soup.body.insert(0, current_nav)
             
             # Replace Footer
             old_footer = soup.find('footer')
             if old_footer: old_footer.decompose()
-            soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
+            
+            current_footer = BeautifulSoup(str(layout_footer), 'html.parser')
+            fix_subpage_nav(current_footer)
+            soup.body.append(current_footer)
             
         # 3. Head Governance
         reorder_head(soup)
@@ -939,6 +1049,38 @@ def update_sitemap(articles):
     with open(sitemap_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(xml_content))
 
+def fix_subpage_nav(nav_soup):
+    """
+    Fix navigation links for subpages:
+    1. Convert relative anchors (#pricing) to absolute (/#pricing)
+    2. Ensure /blog link has trailing slash
+    """
+    for a in nav_soup.find_all('a', href=True):
+        href = a['href']
+        # Fix anchors
+        if href.startswith('#') and len(href) > 1:
+            a['href'] = '/' + href
+        # Fix blog link
+        elif href == '/blog':
+            a['href'] = '/blog/'
+
+def restore_blog_paths_to_absolute(soup):
+    """
+    Reverse relative paths back to absolute for consistent processing.
+    ../assets/logo.png -> /assets/logo.png
+    ../index.html -> /index.html
+    ../../ -> /
+    """
+    for tag in soup.find_all(['a', 'link', 'img', 'script']):
+        attr = 'href' if tag.name in ['a', 'link'] else 'src'
+        if not tag.has_attr(attr): continue
+        
+        val = tag[attr]
+        if val and val.startswith('..'):
+            # Replace all leading ../ sequences with /
+            new_val = re.sub(r'^(\.\./)+', '/', val)
+            tag[attr] = new_val
+
 def main():
     print("Starting build process...")
     
@@ -970,6 +1112,9 @@ def main():
         with open(filepath, 'r', encoding='utf-8') as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
             
+        # Restore paths to absolute before processing
+        restore_blog_paths_to_absolute(soup)
+            
         # Link Governance (Global)
         # Enable sales link replacement for blog posts to prevent weight loss
         fix_links(soup, replace_sales_links=True)
@@ -988,6 +1133,10 @@ def main():
             
             # 3. Modify Nav for Blog Context (Point "情报局" to /blog/)
             current_nav = BeautifulSoup(str(layout_nav), 'html.parser')
+            
+            # Fix anchors and links for subpage context
+            fix_subpage_nav(current_nav)
+            
             # Find the link to #blog, /blog, or /blog/ and ensure it points to /blog/
             # Regex matches: #blog, /blog, /blog/
             blog_link = current_nav.find('a', href=re.compile(r'^(?:/|#)blog/?$'))
@@ -999,16 +1148,19 @@ def main():
             
             old_footer = soup.find('footer')
             if old_footer: old_footer.decompose()
-            soup.body.append(BeautifulSoup(str(layout_footer), 'html.parser'))
             
+            current_footer = BeautifulSoup(str(layout_footer), 'html.parser')
+            fix_subpage_nav(current_footer)
+            soup.body.append(current_footer)
+
         # Visual Breadcrumbs
         inject_breadcrumbs(soup, meta)
         
         # Smart Interlinking
         inject_related_posts(soup, meta, all_articles)
         
-        # *** CONVERT TO RELATIVE PATHS FOR LOCAL PREVIEW ***
-        # make_paths_relative(soup)
+        # Convert to relative paths for local preview / sub-directory
+        # make_blog_paths_relative(soup)
 
         # Save
         with open(filepath, 'w', encoding='utf-8') as f:

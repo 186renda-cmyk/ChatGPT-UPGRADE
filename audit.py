@@ -233,10 +233,25 @@ def main():
                 # Check 1: Root Relative Strategy
                 is_internal = False
                 
-                # Skip anchors, mailto, etc.
-                if href.startswith('#') or href.startswith('mailto:') or href.startswith('tel:') or href.startswith('javascript:'):
+                # Skip mailto, tel, javascript (but NOT # anchors)
+                if href.startswith('mailto:') or href.startswith('tel:') or href.startswith('javascript:'):
                     continue
                 
+                # Check 0: Anchor Links
+                if href.startswith('#'):
+                    anchor_id = href[1:]
+                    if not anchor_id: continue # Empty anchor #
+                    # Search for id or name
+                    if not soup.find(id=anchor_id) and not soup.find(attrs={'name': anchor_id}):
+                        print(f"{Fore.RED}[Anchor ❌] 锚点未找到: {href} in {file_path} (可能是导航栏在子页面失效)")
+                        score_deductions['dead_link'] += 0.5 # Partial deduction
+                    continue
+                
+                # Check 0.5: Unresolved Relative Paths (contains ..)
+                if '/..' in href or href.startswith('..'):
+                     print(f"{Fore.RED}[Dirty URL ❌] 路径包含未解析的相对符 (..): {href} in {file_path} -> 建议标准化路径")
+                     score_deductions['clean_url'] += 1
+
                 if href.startswith(base_url):
                     # Contains full domain -> Warning
                     print(f"{Fore.YELLOW}[警告] 包含完整域名 (建议改为根路径): {href} in {file_path}")
@@ -269,9 +284,19 @@ def main():
                              print(f"{Fore.RED}[Clean URL ❌] 包含 index.html: {href} in {file_path} -> 建议改为 /")
                              score_deductions['clean_url'] += 1
                         else:
-                             # print(f"{Fore.RED}[Clean URL ❌] 包含 .html: {href} in {file_path} -> 建议移除后缀")
-                             # score_deductions['clean_url'] += 1
                              pass
+                             
+                    # Check for missing trailing slash on directory links
+                    # We can try to guess if it is a directory by checking if it matches a local dir
+                    # remove query/hash
+                    clean_path = normalized_href.split('#')[0].split('?')[0].lstrip('/')
+                    
+                    # Ignore if this is a known redirect source
+                    if normalized_href in redirect_map:
+                        pass
+                    elif os.path.isdir(clean_path) and not normalized_href.split('#')[0].split('?')[0].endswith('/'):
+                         print(f"{Fore.YELLOW}[Clean URL] 目录链接缺少末尾斜杠: {href} in {file_path} -> 建议改为 {href}/")
+                         # score_deductions['clean_url'] += 0.5
                     
                     # Check if this internal link is actually an external redirect
                     if normalized_href in redirect_map:
