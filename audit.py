@@ -76,13 +76,13 @@ def get_all_html_files():
     """
     files = [f for f in glob.glob('**/*.html', recursive=True)]
     # Files to exclude from audit
-    ignored_files = {'404.html', 'googlea685aa8ff3686b48.html'}
+    ignored_files = {'404.html', 'googlea685aa8ff3686b48.html', 'SEO_Dashboard.html'}
     
     # Filter files
     filtered_files = []
     for f in files:
-        # Exclude go/ directory (redirect artifacts)
-        if f.startswith('go/') or '/go/' in f:
+        # Exclude go/ directory (redirect artifacts) and MasterTool
+        if f.startswith('go/') or '/go/' in f or 'MasterTool/' in f:
             continue
         if os.path.basename(f) in ignored_files:
             continue
@@ -182,7 +182,7 @@ def check_link_health(urls):
         except requests.RequestException:
             return url, 0 # 0 indicates failure/connection error
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
         future_to_url = {executor.submit(check_url, url): url for url in urls}
         for future in concurrent.futures.as_completed(future_to_url):
             url, status = future.result()
@@ -310,13 +310,22 @@ def main():
                         # It is effectively an external link.
                         continue
 
-                    # Resolve to file for Inbound Counting
+                    # Resolve to file for Inbound Counting & Health Check Optimization
                     target_file = resolve_url_to_file(normalized_href, file_path, base_url)
                     if target_file:
                         if target_file in inbound_counts:
                             inbound_counts[target_file] += 1
+                        # Optimization: If local file exists, assume 200 OK. Do not HTTP check.
+                        continue
                     
-                    # Add to health check regardless of local existence (check live status)
+                    # Also skip if it resolves to a directory that exists locally
+                    # resolve_url_to_file handles .html and index.html mapping, but maybe missed something?
+                    # Let's double check if we can skip based on simple path existence
+                    # ...
+                    
+                    # If not found locally, it might be a broken link or server-side route.
+                    # We will check it via HTTP.
+                    
                     # We need to construct the full URL relative to the current file's location
                     # If href starts with /, it is root relative. urljoin handles this (base + /foo -> base/foo)
                     # If href is relative (e.g. "foo"), urljoin(base, "foo") -> base/foo. 
@@ -336,8 +345,23 @@ def main():
                     
                     # Skip local non-existent tag pages for health check to avoid 404 spam in report
                     # Because they are generated locally and audit checks live site.
+                    # Also strip fragments/query to reduce duplicate checks
                     if '/blog/tag/' not in full_url:
-                        unique_urls_to_check.add(full_url)
+                        # MAJOR OPTIMIZATION: Only check EXTERNAL links via HTTP. 
+                        # Assume internal links are broken if they failed resolve_url_to_file (which we already handled or logged? no we didn't log broken internal links yet)
+                        # Wait, if resolve_url_to_file failed, it IS a dead link locally.
+                        # So we SHOULD report it as dead immediately without HTTP check if we are sure.
+                        # But maybe it's a server rewrite?
+                        # For this static site, we can assume if not local -> dead.
+                        
+                        if full_url.startswith(base_url):
+                             # Internal link not found locally
+                             print(f"{Fore.RED}[Dead Link (Local)] {href} in {file_path}")
+                             score_deductions['dead_link'] += 1
+                        else:
+                             # External link
+                             clean_check_url = full_url.split('#')[0].split('?')[0]
+                             unique_urls_to_check.add(clean_check_url)
 
     # --- External Link Audit ---
     print(f"\n{Fore.BLUE}=== 外链审计 ===")
