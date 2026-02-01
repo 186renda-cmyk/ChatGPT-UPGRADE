@@ -247,9 +247,33 @@ def extract_layout():
     
     return nav, footer
 
+def clean_title_for_seo(title):
+    """
+    Make title evergreen by removing years and time-sensitive words.
+    User request: "Delete numbers, make it evergreen"
+    Target: 2024, 2025, 2026, 最新, etc.
+    """
+    # Remove years like 2023, 2024, 2025, 2026
+    title = re.sub(r'202[0-9]', '', title)
+    
+    # Remove "最新" (Latest)
+    title = title.replace('最新', '')
+    
+    # Remove empty parentheses that might remain () or （）
+    title = re.sub(r'\(\s*\)', '', title)
+    title = re.sub(r'（\s*）', '', title)
+    
+    # Clean up multiple spaces
+    title = re.sub(r'\s+', ' ', title).strip()
+    
+    return title
+
 def get_article_metadata(soup, filename):
     title_tag = soup.find('title')
-    title = title_tag.string.split('|')[0].strip() if title_tag else filename
+    raw_title = title_tag.string.split('|')[0].strip() if title_tag else filename
+    
+    # Apply Evergreen Cleaning
+    title = clean_title_for_seo(raw_title)
     
     meta_desc = soup.find('meta', attrs={'name': 'description'})
     description = meta_desc['content'] if meta_desc else ""
@@ -1112,6 +1136,18 @@ def main():
         with open(filepath, 'r', encoding='utf-8') as f:
             soup = BeautifulSoup(f.read(), 'html.parser')
             
+        # Update Title Tag with Evergreen Title
+        if soup.title:
+            soup.title.string = f"{meta['title']} | GPT-Upgrade"
+            
+        # Update H1 with Evergreen Content
+        h1 = soup.find('h1')
+        if h1:
+            for text_node in h1.find_all(string=True):
+                new_text = clean_title_for_seo(text_node)
+                if new_text != text_node:
+                    text_node.replace_with(new_text)
+
         # Restore paths to absolute before processing
         restore_blog_paths_to_absolute(soup)
             

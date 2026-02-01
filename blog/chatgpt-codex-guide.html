@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="zh-CN">
+<head><meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChatGPT Codex 是什么？ChatGPT Plus 编程神器 Codex 全面使用教程 | GPT-Upgrade</title>
+<meta content="2026年最新ChatGPT Codex使用教程。详解Codex核心功能、如何通过VS Code/Web端使用、ChatGPT Plus/Pro账号权限及额度限制。助你掌握这款AI编程助手，实现从零构建项目到自动化代码重构。" name="description"/>
+<meta content="chatgpt codex, chatgpt plus codex, chatgpt pro codex, chatgpt plus codex 额度, chatgpt codex 教程, chatgpt codex 使用, AI编程助手" name="keywords"/>
+<meta content="zh-CN" http-equiv="content-language"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<meta content="global" name="distribution"/>
+<link href="https://gpt-upgrade.top/blog/chatgpt-codex-guide" rel="canonical"/>
+<link href="https://gpt-upgrade.top/blog/chatgpt-codex-guide" hreflang="x-default" rel="alternate"/>
+<link href="https://gpt-upgrade.top/blog/chatgpt-codex-guide" hreflang="zh" rel="alternate"/>
+<link href="https://gpt-upgrade.top/blog/chatgpt-codex-guide" hreflang="zh-CN" rel="alternate"/>
+<link href="/assets/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
+<link href="/assets/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/assets/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
+<style>
+        body { background-color: #020410; font-family: system-ui, -apple-system, sans-serif; }
+        .glass-nav { background: rgba(2, 4, 16, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .sticky-sidebar { position: sticky; top: 100px; }
+    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { background: '#020410' },
+                    typography: (theme) => ({
+                        DEFAULT: {
+                            css: {
+                                color: theme('colors.gray.400'),
+                                h1: { color: '#fff' },
+                                h2: { color: '#fff', marginTop: '2em' },
+                                h3: { color: '#e5e7eb' },
+                                strong: { color: '#22d3ee' },
+                                a: { color: '#22d3ee', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } },
+                                code: { color: '#f472b6' },
+                                li: { marker: { color: '#4b5563' } }
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    </script>
+<script type="application/ld+json">[
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "ChatGPT Codex 是什么？ChatGPT Plus 编程神器 Codex 全面使用教程",
+    "description": "2026年最新ChatGPT Codex使用教程。详解Codex核心功能、如何通过VS Code/Web端使用、ChatGPT Plus/Pro账号权限及额度限制。助你掌握这款AI编程助手，实现从零构建项目到自动化代码重构。",
+    "datePublished": "2026-02-01",
+    "dateModified": "2026-02-01",
+    "author": {
+      "@type": "Organization",
+      "name": "GPT-Upgrade",
+      "url": "https://gpt-upgrade.top"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://gpt-upgrade.top/blog/chatgpt-codex-guide"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": "https://gpt-upgrade.top/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "博客",
+        "item": "https://gpt-upgrade.top/blog/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "ChatGPT Codex 是什么？ChatGPT Plus 编程神器 Codex 全面使用教程",
+        "item": "https://gpt-upgrade.top/blog/chatgpt-codex-guide"
+      }
+    ]
+  }
+]</script>
+<link href="/assets/site.webmanifest" rel="manifest"/>
+<link href="/assets/favicon.ico" rel="shortcut icon"/>
+</head>
+<body class="antialiased text-gray-300 selection:bg-cyan-500/30"><nav class="fixed top-0 w-full z-50 transition-all duration-300 border-b border-transparent bg-transparent" id="navbar">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<a class="flex items-center gap-3 group" href="/blog/">
+<img alt="GPT-Upgrade" class="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.5)] group-hover:scale-105 transition-transform duration-300" src="/assets/logo.png"/>
+<span class="text-xl font-bold tracking-tight text-white">GPT-Upgrade<span class="text-cyan-400">.TOP</span></span>
+</a>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#pricing">价格方案</a>
+<a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#features">GPT-5.2 能力</a>
+<a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/blog/">情报局</a>
+<a class="text-[15px] font-semibold tracking-wide text-gray-400 hover:text-white transition-colors" href="/#faq">常见问题</a>
+</div>
+<a class="group relative px-6 py-2.5 rounded-full bg-white text-black text-sm font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all overflow-hidden" href="/#pricing">
+<span class="relative z-10 flex items-center gap-2">立即开通 <svg class="w-3 h-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>
+<div class="absolute inset-0 bg-gradient-to-r from-indigo-100 to-cyan-100 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</a>
+</div>
+</nav>
+<main class="pt-32 pb-24 max-w-7xl mx-auto px-6">
+<nav aria-label="Breadcrumb" class="mb-8 overflow-x-auto whitespace-nowrap">
+<ol class="flex items-center gap-2 text-sm text-gray-500">
+<li><a class="hover:text-white transition" href="/">首页</a></li>
+<li>/</li>
+<li><a class="hover:text-white transition" href="/blog/">博客</a></li>
+<li>/</li>
+<li aria-current="page" class="text-gray-300">ChatGPT Codex 是什么？ChatGPT Plus 编程神器 Codex 全面使用教程</li>
+</ol>
+</nav>
+
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Article Content -->
+<div class="lg:col-span-8">
+<header class="mb-10">
+<span class="inline-block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-mono text-indigo-400 mb-4">DEV TOOLS // 编程助手</span>
+<h1 class="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">ChatGPT Codex 是什么？<br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-500">AI 编程神器全面教程</span></h1>
+<div class="flex flex-wrap gap-4 text-sm text-gray-500 items-center">
+<span class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg> 2026.02.01</span>
+<span class="w-1 h-1 rounded-full bg-gray-700"></span>
+<span class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg> 8 min read</span>
+</div>
+</header>
+<article class="prose prose-invert prose-lg max-w-none">
+<p class="lead text-xl text-gray-300">
+<strong>ChatGPT Codex</strong> 是 OpenAI 专门为编程和软件开发打造的 AI 助手，可以把它看作是 GPT 系列模型的“编程专用版”。它不再仅仅是一个代码补全工具，而是一个能理解整个项目上下文、具备自主执行能力的“软件工程代理” (Coding Agent)。
+                    </p>
+<h2>一、ChatGPT Codex 核心功能：你的 AI 编程队友</h2>
+<p>Codex 的能力远超简单的代码片段生成，它旨在解决复杂的软件工程问题：</p>
+<ul class="space-y-2">
+<li><strong>🚀 从零构建项目：</strong> 只需要用自然语言描述需求（如“帮我写一个用 Flask 实现的简单博客”），Codex 就能帮你规划架构、生成文件结构并编写完整的核心代码。</li>
+<li><strong>🐛 代码审查与修复：</strong> 它可以扫描你的代码库，主动发现潜在的 Bug 和安全漏洞，并提供具体的修复建议甚至直接生成修复补丁。</li>
+<li><strong>🔄 自动化重构：</strong> 无论是将 Java 项目迁移到 Kotlin，还是对 iOS 项目进行 MVVM 架构调整，Codex 都能理解上下文，规划路径并执行，大幅减少人工成本。</li>
+<li><strong>🎨 前端 UI 生成：</strong> 上传一张 UI 手绘图或线框图，Codex 能迅速生成对应的 React、Vue 或 HTML/CSS 代码，并支持在云端预览效果。</li>
+</ul>
+<h2>二、如何使用 ChatGPT Codex？</h2>
+<p>OpenAI 提供了多种方式将 Codex 集成到你的开发工作流中：</p>
+<h3>1. VS Code 插件集成 (最推荐)</h3>
+<p>这是目前体验最佳的方式。在 VS Code 插件市场搜索并安装 <strong>"OpenAI Codex"</strong> 官方插件。登录你的 ChatGPT Plus/Pro 账号后，它能直接读取本地项目上下文，实现实时代码生成和修改。</p>
+<h3>2. 网页端 Canvas/Editor</h3>
+<p>在 <a href="https://chatgpt.com" rel="nofollow noopener noreferrer" target="_blank">ChatGPT 网页版</a> 的侧边栏中，选择 Codex 模式。你可以直接创建新项目，或者上传现有代码仓库的压缩包 (.zip) 或 GitHub 链接进行分析和编辑。</p>
+<h3>3. 命令行工具 (CLI)</h3>
+<p>对于习惯终端操作的极客，Codex 提供了强大的 CLI 工具，支持在 macOS 和 Linux 系统上直接通过自然语言指令操作文件系统和代码库。</p>
+<div class="bg-indigo-900/20 border-l-4 border-indigo-500 p-4 my-8">
+<p class="m-0 text-sm text-gray-300">
+<strong>⚠️ 权限提示：</strong> 目前 Codex 仅对 <a class="text-indigo-400 font-bold hover:underline" href="/blog/chatgpt-plus-recharge-guide">ChatGPT Plus</a>、Pro、Team 和 Enterprise 等付费用户开放。免费版用户暂时无法使用此高级编程功能。
+                        </p>
+</div>
+<h2>三、ChatGPT Plus/Pro Codex 额度与限制</h2>
+<p>很多开发者关心：<strong>ChatGPT Plus 的 Codex 额度够用吗？</strong></p>
+<div class="overflow-hidden rounded-xl border border-white/10 my-8">
+<table class="w-full text-sm text-left m-0">
+<thead class="bg-white/5 text-white">
+<tr>
+<th class="p-4 font-semibold">订阅计划</th>
+<th class="p-4 font-semibold">Codex 额度</th>
+<th class="p-4 font-semibold">适用场景</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+<tr>
+<td class="p-4 text-indigo-400 font-bold">ChatGPT Plus ($20/月)</td>
+<td class="p-4">共享 GPT-4o 额度 (约 80条/3小时)，代码执行速度标准</td>
+<td class="p-4">日常辅助编程、Debug、小项目开发</td>
+</tr>
+<tr>
+<td class="p-4 text-purple-400 font-bold">ChatGPT Pro ($200/月)</td>
+<td class="p-4"><strong>无限制</strong> Codex 使用，优先算力，支持更长上下文</td>
+<td class="p-4">全职 AI 结对编程、大型重构、企业级开发</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="text-sm text-gray-500 mt-2">注：具体额度可能随 OpenAI 政策调整，建议参考 <a class="text-cyan-400 hover:underline" href="/blog/chatgpt-plus-usage-limits">ChatGPT Plus 最新使用限制详解</a>。</p>
+<h2>四、使用建议与最佳实践</h2>
+<ul class="list-decimal pl-6 space-y-2">
+<li><strong>选择合适的模式：</strong>
+<ul class="list-disc pl-4 mt-1 text-gray-400">
+<li><strong>Chat/Plan 模式：</strong> 仅提供建议，不修改文件，适合咨询方案。</li>
+<li><strong>Agent 模式：</strong> 每一步修改需确认，适合大多数日常开发。</li>
+<li><strong>Full Access 模式：</strong> 高度自动化，适合批量修改，但需配合 Git 版本控制以防万一。</li>
+</ul>
+</li>
+<li><strong>保持人工审查：</strong> 尽管 Codex 很强大，但在处理涉及安全、支付或核心业务逻辑的代码时，<strong>必须</strong>进行人工 Code Review。</li>
+<li><strong>善用系统环境：</strong> macOS 用户的体验目前最佳。Windows 用户推荐使用 WSL2 (Ubuntu) + VS Code 的组合，以获得最流畅的 Codex 体验。</li>
+</ul>
+<div class="my-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border border-indigo-500/20">
+<h3 class="text-xl font-bold text-white mb-4">🚀 立即解锁 AI 编程能力</h3>
+<p class="mb-4">Codex 已成为现代开发者的必备工具。只需订阅 ChatGPT Plus，即可获得这位全天候待命的高级工程师队友。</p>
+<div class="flex gap-4">
+<a class="px-6 py-2.5 rounded-lg bg-indigo-500 text-white font-bold hover:bg-indigo-400 transition shadow-lg shadow-indigo-500/25" href="/#pricing">升级 Plus 解锁 Codex</a>
+<a class="px-6 py-2.5 rounded-lg bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition" href="/blog/chatgpt-plus-recharge-guide">查看充值教程</a>
+</div>
+</div>
+
+
+<div class="mt-16 pt-10 border-t border-white/10 related-posts-container">
+<h3 class="text-lg font-bold text-white mb-6">推荐阅读</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<a class="block group p-5 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5" href="/blog/chatgpt-download-guide">
+<div class="text-[10px] text-gray-500 mb-2 font-mono uppercase">Related Article</div>
+<h4 class="text-white font-bold mb-2 group-hover:text-cyan-300 transition line-clamp-2">ChatGPT下载指南：官方App/电脑版/iOS安卓安装教程</h4>
+<p class="text-xs text-gray-400 line-clamp-2">2026年最新ChatGPT下载教程。涵盖ChatGPT App下载（iOS/Android）、电脑桌面版（Windows/macOS）及网页版使用指南。解决国内用户无法下载、美区Apple ID获取、谷歌商店安装等问题。</p>
+</a>
+<a class="block group p-5 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5" href="/blog/how-to-register-chatgpt-account">
+<div class="text-[10px] text-gray-500 mb-2 font-mono uppercase">Related Article</div>
+<h4 class="text-white font-bold mb-2 group-hover:text-cyan-300 transition line-clamp-2">ChatGPT 账号注册教程：3分钟搞定 ChatGPT 5.0 账号注册</h4>
+<p class="text-xs text-gray-400 line-clamp-2">2026年最新ChatGPT账号注册教程。手把手教你如何注册ChatGPT账号，解决手机号验证、邮箱不支持等问题。涵盖ChatGPT 5.0注册流程，小白也能轻松上手。</p>
+</a>
+<a class="block group p-5 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5" href="/blog/chatgpt-plus-recharge-guide">
+<div class="text-[10px] text-gray-500 mb-2 font-mono uppercase">Related Article</div>
+<h4 class="text-white font-bold mb-2 group-hover:text-cyan-300 transition line-clamp-2">ChatGPT Plus 会员怎么充值？ 国内订阅教程 (含代充/Apple ID)</h4>
+<p class="text-xs text-gray-400 line-clamp-2">2026年最新 ChatGPT Plus 充值指南。详解国内用户主流的 4 种支付方式：第三方代充（推荐）、美区 Apple ID 礼品卡、海外信用卡及虚拟卡避坑指南。</p>
+</a>
+<a class="block group p-5 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5" href="/blog/chatgpt-vs-gemini">
+<div class="text-[10px] text-gray-500 mb-2 font-mono uppercase">Related Article</div>
+<h4 class="text-white font-bold mb-2 group-hover:text-cyan-300 transition line-clamp-2">ChatGPT vs Gemini 深度对比：贴心秘书与全能研究员的对决</h4>
+<p class="text-xs text-gray-400 line-clamp-2">全方位解析 ChatGPT 与 Gemini 的核心区别。从上下文窗口、多模态能力到适用场景（内容创作 vs 学术研究），助你根据需求选择最合适的AI工具。</p>
+</a>
+</div>
+</div>
+</article>
+</div>
+<!-- Sidebar -->
+<div class="lg:col-span-4 relative">
+<div class="sticky-sidebar space-y-6">
+<!-- Sales Card -->
+<div class="p-6 rounded-3xl bg-gradient-to-b from-[#161b33] to-[#09090b] border border-indigo-500/30 relative overflow-hidden group shadow-2xl shadow-indigo-900/20">
+<div class="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 blur-[60px] rounded-full group-hover:bg-indigo-500/20 transition-all"></div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-4">
+<span class="px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-[10px] font-bold text-white tracking-wider">🔥 开发者必备</span>
+<span class="text-xs text-gray-400">Coding Agent</span>
+</div>
+<h3 class="text-xl font-bold text-white mb-2">开通 ChatGPT Plus</h3>
+<p class="text-xs text-gray-400 mb-6">解锁 Codex 编程助手，支持 VS Code 集成，代码生成速度提升 300%。</p>
+<div class="flex items-end gap-3 mb-6">
+<span class="text-4xl font-bold text-white">¥169<span class="text-lg text-gray-400">/月</span></span>
+<div class="flex flex-col mb-1">
+<span class="text-xs text-gray-500 line-through">¥198</span>
+<span class="text-[10px] text-green-400">限时优惠</span>
+</div>
+</div>
+<ul class="space-y-3 mb-6">
+<li class="flex items-center gap-3 text-sm text-gray-300"><svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg> 支持 Codex/Canvas 模式</li>
+<li class="flex items-center gap-3 text-sm text-gray-300"><svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg> 优先访问 GPT-4o</li>
+<li class="flex items-center gap-3 text-sm text-gray-300"><svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg> 封号全额包赔</li>
+</ul>
+<a class="block w-full py-3.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-center transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5" href="/#pricing">立即开通 Plus</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-[#020410] border-t border-white/5 pt-20 pb-10">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 md:col-span-1">
+<a class="flex items-center gap-2 mb-6" href="/blog/">
+<img alt="GPT-Upgrade" class="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.5)]" src="/assets/logo.png"/>
+<span class="font-bold text-white">GPT-Upgrade</span>
+</a>
+<p class="text-sm text-gray-500 leading-relaxed mb-6">消除支付阻碍，直达原生 ChatGPT Plus。采用美区正规企业卡结算，为您的 GPT-4o 与 o1 创新工作流提供零风险、不掉线的稳定护航。</p>
+<div class="flex items-center gap-2 text-xs text-green-400 bg-green-500/5 px-3 py-1.5 rounded-full border border-green-500/10 w-fit"><span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>All Systems Operational</div>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">产品服务</h4>
+<ul class="space-y-4 text-sm text-gray-500">
+<li><a class="hover:text-cyan-400 transition" href="/#pricing">ChatGPT Plus 代充</a></li>
+<li><a class="hover:text-cyan-400 transition" href="/#pricing">独享成品号</a></li>
+<li><a class="hover:text-cyan-400 transition" href="/#pricing">API Key 购买</a></li>
+<li><a class="hover:text-cyan-400 transition" href="/#pricing">Team 团队版</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">资源中心</h4>
+<ul class="space-y-4 text-sm text-gray-500">
+<li><a class="hover:text-cyan-400 transition" href="/blog/how-to-subscribe-chatgpt">支付订阅指南</a></li>
+<li><a class="hover:text-cyan-400 transition" href="/blog/chatgpt-plus-vs-pro">Plus vs Pro 评测</a></li>
+<li><a class="hover:text-cyan-400 transition" href="/blog/chatgpt-go-vs-plus">Go vs Plus 对比</a></li>
+<li><a class="hover:text-cyan-400 transition" href="/#faq">帮助文档 / FAQ</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">安全保障</h4>
+<ul class="space-y-4 text-sm text-gray-500">
+<li><a class="hover:text-white transition" href="/privacy">隐私政策 (Privacy)</a></li>
+<li><a class="hover:text-white transition" href="/terms">服务条款 (Terms)</a></li>
+<li><a class="hover:text-white transition" href="#">退款政策 (Refund)</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="text-xs text-gray-600">© 2025 GPT-Upgrade.TOP. All rights reserved. Not affiliated with OpenAI.</div>
+<div class="flex items-center gap-4 opacity-30 grayscale hover:grayscale-0 transition-all">
+<svg class="h-6 w-auto" fill="currentColor" viewbox="0 0 36 12"><path d="M12.9 8.2L14.7 2.1H17.2L15.3 8.2H12.9ZM22.1 2.2C21.6 2 20.8 1.8 19.8 1.8C17.3 1.8 15.5 3.1 15.5 5.6C15.5 9.2 20.6 9.3 20.6 10.9C20.6 11.4 19.9 12 18.2 12C17.2 12 15.7 11.7 15 11.4L14.6 13.6C15.5 14 17.2 14.3 18.7 14.3C21.5 14.3 23.3 12.9 23.3 10.7C23.3 7.3 18.2 7.1 18.2 5.4C18.2 4.9 18.8 4.3 20.2 4.3C20.9 4.3 22 4.4 22.8 4.8L22.1 2.2ZM28.5 8.2L28.9 6C29 5.5 29 5.2 28.7 4.9C28.4 4.5 27.6 4.1 26.6 4.1C25.3 4.1 24.9 5.1 24.5 6.7L23.6 11.2H21L22.7 2.1H25.3L25.4 4.5C25.9 3.6 26.9 2.1 28.6 2.1C30.2 2.1 31.4 3.4 31.2 5.5L30.6 8.2H28.5ZM36 8.2H33.5L34.1 5C34.2 4.5 34.1 4.1 33.9 3.8C33.7 3.5 33.3 3.3 32.7 3.3C32.2 3.3 31.6 3.7 31.4 4.2L30.3 8.2H27.8L29.6 2.1H32.1L32.2 3.5C32.8 2.6 33.9 2.1 35.1 2.1C36.7 2.1 37.8 3.3 37.6 5.5L36.9 8.2H36Z"></path></svg>
+<svg class="h-6 w-auto" fill="currentColor" viewbox="0 0 36 22"><circle cx="12" cy="11" fill-opacity="0.6" r="11"></circle><circle cx="24" cy="11" fill-opacity="0.6" r="11"></circle><path d="M18 11V11C18 7.3 16.2 4 13.4 2C16.3 4.1 18 7.4 18 11C18 14.6 16.3 17.9 13.4 20C16.2 18 18 14.7 18 11Z"></path></svg>
+<span class="text-xs font-bold font-sans tracking-tighter">Powered by Stripe</span>
+</div>
+</div>
+</div>
+</footer></body>
+</html>
