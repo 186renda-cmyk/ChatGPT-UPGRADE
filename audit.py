@@ -8,9 +8,12 @@ import requests
 from colorama import init, Fore, Style
 from collections import defaultdict
 import concurrent.futures
+import urllib3
 
 # Initialize colorama
 init(autoreset=True)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 def load_config():
     """
@@ -175,10 +178,29 @@ def check_link_health(urls):
     
     def check_url(url):
         try:
-            headers = {'User-Agent': 'SEOAuditBot/1.0'}
-            # Use a timeout to avoid hanging
-            response = requests.head(url, headers=headers, timeout=5, allow_redirects=True)
-            return url, response.status_code
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+            }
+            # Try HEAD first
+            try:
+                response = requests.head(url, headers=headers, timeout=10, allow_redirects=True, verify=False)
+                if response.status_code == 405: # Method Not Allowed
+                    raise requests.RequestException("HEAD not allowed")
+                if response.status_code >= 400:
+                     # Retry with GET for potential 403/404 that might be server config specific
+                     raise requests.RequestException("Status error, retry GET")
+                return url, response.status_code
+            except requests.RequestException as e:
+                # Fallback to GET
+                try:
+                    response = requests.get(url, headers=headers, timeout=10, stream=True, allow_redirects=True, verify=False)
+                    response.close() # Close connection
+                    return url, response.status_code
+                except Exception as e2:
+                    # print(f"Failed {url}: {e2}")
+                    return url, 0
+                
         except requests.RequestException:
             return url, 0 # 0 indicates failure/connection error
 
@@ -216,6 +238,9 @@ def main():
     
     # We need to cache link health checks to avoid re-checking same URL
     unique_urls_to_check = set()
+    
+    # Domains to skip health check (Known bot blockers)
+    SKIP_HEALTH_CHECK_DOMAINS = {'nav.xmpick.com'}
 
     for file_path in html_files:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -383,7 +408,17 @@ def main():
     
     # --- Link Health Check ---
     print(f"\n{Fore.BLUE}=== 链路健康度检测 (检测 {len(unique_urls_to_check)} 个链接) ===")
-    url_statuses = check_link_health(list(unique_urls_to_check))
+    
+    # Filter out skipped domains
+    urls_to_check = []
+    for url in unique_urls_to_check:
+        parsed = urlparse(url)
+        if parsed.netloc in SKIP_HEALTH_CHECK_DOMAINS:
+            print(f"{Fore.YELLOW}[Skip Health Check] {url} (Known Bot Blocker)")
+            continue
+        urls_to_check.append(url)
+        
+    url_statuses = check_link_health(urls_to_check)
     
     for url, status in url_statuses.items():
         if status == 200:

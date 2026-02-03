@@ -2,15 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://gpt-upgrade.top/</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://gpt-upgrade.top/blog/</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-atlas-guide</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gpt-upgrade.top/blog/chatgpt-canvas-guide</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gpt-upgrade.top/blog/chatgpt-download-guide</loc>
@@ -80,31 +92,31 @@
   </url>
   <url>
     <loc>https://gpt-upgrade.top/blog/category/reviews</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gpt-upgrade.top/blog/category/tutorials</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gpt-upgrade.top/blog/category/news</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://gpt-upgrade.top/privacy</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://gpt-upgrade.top/terms</loc>
-    <lastmod>2026-02-01</lastmod>
+    <lastmod>2026-02-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

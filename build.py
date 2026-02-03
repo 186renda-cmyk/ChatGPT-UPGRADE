@@ -282,22 +282,50 @@ def get_article_metadata(soup, filename):
     keywords = [k.strip().lower() for k in meta_keys['content'].split(',')] if meta_keys else []
     
     # Robust date extraction
-    date = datetime.date.today().isoformat()
-    # Try finding in meta first (custom or standard)
+    date = None
+    
+    # 1. Try finding in meta first (custom or standard)
     meta_date = soup.find('meta', property='article:published_time')
     if meta_date:
         date = meta_date['content'][:10]
-    else:
-        # Try Regex in content
+        
+    # 2. Try JSON-LD
+    if not date:
+        script_ld = soup.find('script', type='application/ld+json')
+        if script_ld:
+            try:
+                # Use get_text() for safety
+                json_text = script_ld.get_text().strip()
+                if json_text:
+                    data = json.loads(json_text)
+                    # Handle list or dict
+                    if isinstance(data, dict):
+                        data = [data]
+                    
+                    for item in data:
+                        if item.get('@type') == 'BlogPosting' and 'datePublished' in item:
+                            date = item['datePublished'][:10]
+                            break
+            except Exception as e:
+                print(f"JSON-LD parsing error in {filename}: {e}")
+                pass
+                
+    # 3. Try Regex in content (Only if not found yet)
+    if not date:
         text = soup.get_text()
         date_match = re.search(r'(\d{4}[.-]\d{2}[.-]\d{2})', text)
         if date_match:
             date = date_match.group(1).replace('.', '-')
-        else:
-            # Fallback to file mtime
-            filepath = os.path.join(BLOG_DIR, filename)
+            
+    # 4. Fallback to file mtime or Today
+    if not date:
+        # Fallback to file mtime
+        filepath = os.path.join(BLOG_DIR, filename)
+        try:
             mtime = os.path.getmtime(filepath)
             date = datetime.date.fromtimestamp(mtime).isoformat()
+        except:
+            date = datetime.date.today().isoformat()
             
     url = clean_url(f'/blog/{filename}')
     
